@@ -1,4666 +1,1448 @@
 <!DOCTYPE html>
 <html lang="id">
-
 <head>
-
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>Mangrove Dashboard Nasional</title>
-
-<link
-  rel="stylesheet"
-  href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-/>
-
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-
-
-<style>
-
-*{
-  box-sizing:border-box;
-}
-
-body{
-  margin:0;
-  font-family:Arial,sans-serif;
-  background:#07131d;
-  color:#e8f2f5;
-}
-
-.container{
-  width:94%;
-  max-width:1450px;
-  margin:auto;
-  padding:25px 0 50px;
-}
-
-.header{
-  display:flex;
-  justify-content:space-between;
-  align-items:flex-start;
-  margin-bottom:25px;
-}
-
-.title{
-  font-size:28px;
-  font-weight:bold;
-}
-
-.subtitle{
-  color:#7c94a3;
-  margin-top:7px;
-  font-size:13px;
-}
-
-.update-box{
-  background:#10222e;
-  border:1px solid #1c3a48;
-  border-radius:10px;
-  padding:10px 15px;
-  font-size:12px;
-  color:#9db1bc;
-}
-
-.update-box b{
-  color:#4fd1a5;
-}
-
-
-/* =====================================================
-FILTER
-===================================================== */
-
-.filters{
-  display:flex;
-  gap:12px;
-  margin-bottom:20px;
-  flex-wrap:wrap;
-}
-
-.filter-group{
-  position:relative;
-  width:280px;
-}
-
-.filter-label{
-  font-size:11px;
-  color:#7c94a3;
-  margin-bottom:5px;
-}
-
-.filter-button{
-  width:100%;
-  background:#10222e;
-  color:white;
-  border:1px solid #254553;
-  padding:10px 15px;
-  border-radius:8px;
-  cursor:pointer;
-  text-align:left;
-  font-size:14px;
-}
-
-.filter-button:hover{
-  border-color:#4fd1a5;
-}
-
-.province-dropdown{
-  display:none;
-  position:absolute;
-  z-index:10000;
-  top:62px;
-  left:0;
-  width:100%;
-  background:#10222e;
-  border:1px solid #254553;
-  border-radius:8px;
-  padding:8px;
-  box-shadow:0 8px 25px rgba(0,0,0,.45);
-}
-
-.province-dropdown.show{
-  display:block;
-}
-
-.province-search{
-  width:100%;
-  background:#07131d;
-  color:white;
-  border:1px solid #254553;
-  border-radius:6px;
-  padding:9px 10px;
-  margin-bottom:7px;
-  outline:none;
-}
-
-.province-search:focus{
-  border-color:#4fd1a5;
-}
-
-.province-list{
-  max-height:260px;
-  overflow-y:auto;
-}
-
-.province-option{
-  padding:9px 10px;
-  border-radius:5px;
-  cursor:pointer;
-  font-size:13px;
-}
-
-.province-option:hover{
-  background:#173946;
-}
-
-.province-option.active{
-  background:#205363;
-  color:#4fd1a5;
-}
-
-.year-select{
-  background:#10222e;
-  color:white;
-  border:1px solid #254553;
-  padding:10px 15px;
-  border-radius:8px;
-  min-width:180px;
-}
-
-.polygon-status{
-  font-size:11px;
-  color:#7c94a3;
-  margin-top:-10px;
-  margin-bottom:10px;
-}
-
-
-/* =====================================================
-POLYGON CONTROL
-===================================================== */
-
-.polygon-control{
-  display:flex;
-  gap:18px;
-  flex-wrap:wrap;
-  align-items:center;
-  background:#0d202b;
-  border:1px solid #183846;
-  border-radius:8px;
-  padding:10px 14px;
-  margin-bottom:15px;
-}
-
-.polygon-control-title{
-  font-size:11px;
-  color:#7c94a3;
-  margin-right:5px;
-}
-
-.layer-check{
-  display:flex;
-  align-items:center;
-  gap:7px;
-  font-size:12px;
-  cursor:pointer;
-  user-select:none;
-}
-
-.layer-check input{
-  width:15px;
-  height:15px;
-  cursor:pointer;
-  accent-color:#4fd1a5;
-}
-
-.layer-color{
-  width:12px;
-  height:12px;
-  border-radius:3px;
-  display:inline-block;
-}
-
-.layer-lebat{
-  background:#6A1B9A;
-}
-
-.layer-sedang{
-  background:#F57C00;
-}
-
-.layer-jarang{
-  background:#1976D2;
-}
-
-
-/* =====================================================
-KPI
-===================================================== */
-
-.kpis{
-  display:grid;
-  grid-template-columns:repeat(4,1fr);
-  gap:15px;
-  margin-bottom:20px;
-}
-
-.card{
-  background:#0d202b;
-  border:1px solid #183846;
-  border-radius:12px;
-  padding:18px;
-}
-
-.kpi-label{
-  font-size:12px;
-  color:#7c94a3;
-  margin-bottom:8px;
-}
-
-.kpi-value{
-  font-size:25px;
-  font-weight:bold;
-  color:#4fd1a5;
-}
-
-.grid2{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:18px;
-  margin-bottom:18px;
-}
-
-.grid3{
-  display:grid;
-  grid-template-columns:1fr 1fr 1fr;
-  gap:18px;
-  margin-bottom:18px;
-}
-
-.card-title{
-  font-size:14px;
-  font-weight:bold;
-  margin-bottom:15px;
-}
-
-.chart-box{
-  height:300px;
-}
-
-#mainMap,
-#provMap,
-#compMap{
-  height:430px;
-  border-radius:10px;
-}
-
-table{
-  width:100%;
-  border-collapse:collapse;
-  font-size:12px;
-}
-
-th{
-  text-align:left;
-  color:#6f8996;
-  padding:10px;
-  border-bottom:1px solid #25404c;
-}
-
-td{
-  padding:11px 10px;
-  border-bottom:1px solid #17313d;
-}
-
-tbody tr{
-  cursor:pointer;
-}
-
-tbody tr:hover{
-  background:#102d39;
-}
-
-.num{
-  text-align:right;
-}
-
-.btn{
-  display:inline-block;
-  padding:10px 15px;
-  border-radius:8px;
-  background:#173946;
-  color:#fff;
-  cursor:pointer;
-  border:1px solid #275464;
-  margin-bottom:18px;
-}
-
-.btn:hover{
-  background:#205363;
-}
-
-.detail-title{
-  font-size:24px;
-  font-weight:bold;
-  margin-bottom:5px;
-}
-
-.detail-subtitle{
-  color:#7c94a3;
-  font-size:13px;
-  margin-bottom:20px;
-}
-
-.progress{
-  height:12px;
-  background:#17313d;
-  border-radius:10px;
-  overflow:hidden;
-  margin-top:10px;
-}
-
-.progress-fill{
-  height:100%;
-  width:0%;
-  background:#4fd1a5;
-  transition:.4s;
-}
-
-.target-text{
-  margin-top:8px;
-  color:#8ca2ad;
-  font-size:12px;
-}
-
-.popup-title{
-  font-weight:bold;
-  margin-bottom:8px;
-}
-
-.popup-row{
-  margin:5px 0;
-}
-
-.section-space{
-  margin-top:18px;
-}
-
-.legend{
-  margin-top:10px;
-  display:flex;
-  gap:18px;
-  flex-wrap:wrap;
-  font-size:11px;
-  color:#9db1bc;
-}
-
-.legend-item{
-  display:flex;
-  align-items:center;
-  gap:6px;
-}
-
-.legend-box{
-  width:12px;
-  height:12px;
-  border-radius:3px;
-}
-
-@media(max-width:900px){
-
-  .kpis{
-    grid-template-columns:1fr 1fr;
-  }
-
-  .grid2,
-  .grid3{
-    grid-template-columns:1fr;
-  }
-
-}
-
-
-/* =========================================================
-   DARK OPENSTREETMAP BASEMAP
-   Tanpa API Key
-   ========================================================= */
-
-.dark-map-tiles{
-  filter:
-    invert(100%)
-    hue-rotate(180deg)
-    brightness(70%)
-    contrast(115%)
-    saturate(45%);
-}
-
-</style>
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IBEQ Ocean & Marine Dashboard - Realisasi Penanaman Mangrove</title>
+    
+    <!-- Leaflet CSS & JS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: #061826;
+            color: #e2e8f0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            min-height: 100vh;
+        }
+
+        /* Glassmorphism Panel Style */
+        .glass-panel {
+            background: rgba(13, 37, 56, 0.75);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(0, 229, 255, 0.18);
+            border-radius: 12px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+
+        /* NAVBAR / HEADER */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 20px;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .header-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .brand-icon {
+            background: rgba(0, 229, 255, 0.15);
+            border: 1px solid rgba(0, 229, 255, 0.3);
+            border-radius: 8px;
+            padding: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #00e5ff;
+        }
+
+        .brand-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #ffffff;
+            letter-spacing: 0.5px;
+        }
+
+        .brand-sub {
+            font-size: 11px;
+            color: #00e5ff;
+            opacity: 0.8;
+        }
+
+        .header-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .nav-btn {
+            background: #0f2738;
+            border: 1px solid #1c455d;
+            color: #94a3b8;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s;
+        }
+
+        .nav-btn:hover {
+            border-color: #00e5ff;
+            color: #fff;
+        }
+
+        .time-badge {
+            background: #0d202e;
+            border: 1px solid #18384b;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            color: #38bdf8;
+            font-weight: 500;
+        }
+
+        .export-btn {
+            background: #0284c7;
+            color: #fff;
+            border: none;
+            padding: 6px 14px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: 0 0 12px rgba(2, 132, 199, 0.4);
+        }
+
+        /* MAIN TOP SECTION GRID */
+        .top-section {
+            display: grid;
+            grid-template-columns: 340px 1fr;
+            gap: 16px;
+        }
+
+        @media (max-width: 1024px) {
+            .top-section {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* LEFT CHART CARD (GAUGE + TREND) */
+        .chart-card {
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            justify-content: space-between;
+        }
+
+        .card-header-text {
+            font-size: 13px;
+            font-weight: 600;
+            color: #f1f5f9;
+            margin-bottom: 2px;
+        }
+
+        .card-sub-text {
+            font-size: 10px;
+            color: #38bdf8;
+            margin-bottom: 8px;
+            background: rgba(0, 229, 255, 0.08);
+            padding: 4px 8px;
+            border-radius: 4px;
+            display: inline-block;
+        }
+
+        .gauge-container {
+            position: relative;
+            height: 125px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+        }
+
+        .gauge-center-text {
+            position: absolute;
+            bottom: 4px;
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
+            pointer-events: none;
+        }
+
+        .gauge-pct {
+            font-size: 22px;
+            font-weight: 800;
+            color: #00e5ff;
+        }
+
+        .gauge-label {
+            font-size: 9px;
+            color: #94a3b8;
+        }
+
+        .gauge-ticks {
+            display: flex;
+            justify-content: space-between;
+            font-size: 10px;
+            color: #64748b;
+            padding: 0 10px;
+            margin-top: 2px;
+        }
+
+        /* SECTION TREN PENANAMAN */
+        .trend-box {
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            padding-top: 10px;
+        }
+
+        .trend-title {
+            font-size: 11px;
+            font-weight: 600;
+            color: #cbd5e1;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .trend-chart-container {
+            height: 120px;
+            position: relative;
+        }
+
+        /* MAP CARD CONTAINER */
+        .map-card {
+            position: relative;
+            padding: 8px;
+            display: flex;
+            flex-direction: column;
+            min-height: 420px;
+        }
+
+        .map-overlay-top {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        /* CUSTOM DROPDOWN PROVINSI */
+        .custom-dropdown-container {
+            position: relative;
+            width: 220px;
+        }
+
+        .dropdown-btn {
+            background: rgba(13, 37, 56, 0.95);
+            border: 1px solid rgba(0, 229, 255, 0.3);
+            color: #e2e8f0;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            cursor: pointer;
+            width: 100%;
+            text-align: left;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .dropdown-menu {
+            display: none;
+            position: absolute;
+            top: 105%;
+            left: 0;
+            width: 100%;
+            background: #0a1d2c;
+            border: 1px solid rgba(0, 229, 255, 0.3);
+            border-radius: 8px;
+            padding: 8px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+            z-index: 10001;
+        }
+
+        .dropdown-menu.show {
+            display: block;
+        }
+
+        .search-input {
+            width: 100%;
+            background: #061826;
+            border: 1px solid #1c455d;
+            color: #fff;
+            padding: 6px 8px;
+            border-radius: 6px;
+            font-size: 11px;
+            margin-bottom: 6px;
+            outline: none;
+        }
+
+        .search-input:focus {
+            border-color: #00e5ff;
+        }
+
+        .dropdown-list {
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .dropdown-item {
+            padding: 6px 8px;
+            font-size: 12px;
+            color: #cbd5e1;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+
+        .dropdown-item:hover, .dropdown-item.active {
+            background: rgba(0, 229, 255, 0.15);
+            color: #00e5ff;
+        }
+
+        .select-custom {
+            background: rgba(13, 37, 56, 0.9);
+            border: 1px solid rgba(0, 229, 255, 0.3);
+            color: #e2e8f0;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            outline: none;
+            cursor: pointer;
+        }
+
+        /* MODERN FLOATING LAYER WIDGET (KANAN ATAS) */
+        .layer-control-floating {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 10px;
+        }
+
+        .floating-icon-btn {
+            background: rgba(10, 28, 43, 0.9);
+            border: 1px solid rgba(0, 229, 255, 0.3);
+            color: #00e5ff;
+            width: 42px;
+            height: 42px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+            transition: all 0.2s;
+            backdrop-filter: blur(8px);
+        }
+
+        .floating-icon-btn:hover {
+            background: rgba(0, 229, 255, 0.2);
+            border-color: #00e5ff;
+            transform: translateY(-2px);
+        }
+
+        .layer-modal-box {
+            display: none;
+            width: 280px;
+            background: rgba(7, 22, 34, 0.95);
+            border: 1px solid rgba(0, 229, 255, 0.3);
+            backdrop-filter: blur(12px);
+            border-radius: 12px;
+            padding: 14px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+            color: #e2e8f0;
+            animation: fadeIn 0.2s ease-in-out;
+        }
+
+        .layer-modal-box.show {
+            display: block;
+        }
+
+        .layer-modal-header {
+            font-size: 13px;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .layer-section-title {
+            font-size: 11px;
+            font-weight: 600;
+            color: #38bdf8;
+            margin: 10px 0 6px 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+        }
+
+        .layer-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 10px;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 8px 10px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+        }
+
+        .layer-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 11px;
+            color: #cbd5e1;
+            cursor: pointer;
+        }
+
+        .layer-item-left {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .layer-item input[type="checkbox"] {
+            accent-color: #00e5ff;
+            cursor: pointer;
+        }
+
+        .btn-hide-all {
+            width: 100%;
+            background: rgba(0, 229, 255, 0.1);
+            border: 1px solid rgba(0, 229, 255, 0.4);
+            color: #00e5ff;
+            padding: 7px;
+            border-radius: 8px;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 6px;
+            transition: all 0.2s;
+            text-align: center;
+        }
+
+        .btn-hide-all:hover {
+            background: rgba(0, 229, 255, 0.25);
+            color: #fff;
+        }
+
+        #mainMap {
+            width: 100%;
+            height: 100%;
+            min-height: 400px;
+            border-radius: 8px;
+            z-index: 1;
+            background: #111822;
+        }
+
+        /* BOTTOM METRICS PANEL */
+        .bottom-section {
+            padding: 14px 18px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            width: 100%;
+            overflow-x: auto;
+            white-space: nowrap;
+        }
+
+        .bottom-section::-webkit-scrollbar {
+            height: 6px;
+        }
+        .bottom-section::-webkit-scrollbar-track {
+            background: rgba(6, 24, 38, 0.5);
+            border-radius: 4px;
+        }
+        .bottom-section::-webkit-scrollbar-thumb {
+            background: rgba(0, 229, 255, 0.3);
+            border-radius: 4px;
+        }
+
+        .metric-title-box {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            min-width: 150px;
+            padding-right: 12px;
+            flex-shrink: 0;
+        }
+
+        .metric-title-box h3 {
+            font-size: 13px;
+            font-weight: 700;
+            color: #ffffff;
+            line-height: 1.35;
+            white-space: normal;
+        }
+
+        .metrics-scroll-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-shrink: 0;
+        }
+
+        .stat-card {
+            background: rgba(6, 24, 38, 0.6);
+            border: 1px solid rgba(0, 229, 255, 0.25);
+            border-radius: 8px;
+            padding: 10px 14px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            color: #e2e8f0;
+            min-width: 180px;
+            height: 90px;
+            flex-shrink: 0;
+        }
+
+        .card-top-icon {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 11px;
+            color: #94a3b8;
+        }
+
+        .stat-value-tall {
+            font-size: 22px;
+            font-weight: 800;
+            color: #00e5ff;
+        }
+
+        .stat-value-tall .unit {
+            font-size: 11px;
+            font-weight: normal;
+            color: #64748b;
+        }
+
+        .stat-sub-info {
+            font-size: 10px;
+            color: #64748b;
+            display: flex;
+            gap: 8px;
+        }
+
+        .stat-sub-info span strong {
+            color: #10b981;
+        }
+
+        .table-card {
+            background: rgba(6, 24, 38, 0.6);
+            border: 1px solid rgba(0, 229, 255, 0.25);
+            border-radius: 8px;
+            padding: 10px 14px;
+            font-size: 11px;
+            min-width: 320px;
+            height: 90px;
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .table-title {
+            font-size: 11px;
+            font-weight: 600;
+            color: #cbd5e1;
+            margin-bottom: 6px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            text-align: left;
+            color: #64748b;
+            padding-bottom: 4px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            font-weight: 500;
+            font-size: 10px;
+        }
+
+        td {
+            padding: 3px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+            color: #e2e8f0;
+            font-size: 10px;
+        }
+
+        .num {
+            text-align: right;
+        }
+
+        /* Leaflet Popup Custom Styling */
+        .leaflet-popup-content-wrapper {
+            background: #0a1d2c !important;
+            color: #e2e8f0 !important;
+            border: 1px solid #00e5ff !important;
+            border-radius: 8px !important;
+            padding: 4px !important;
+        }
+        .leaflet-popup-tip {
+            background: #0a1d2c !important;
+        }
+
+        .popup-row {
+            font-size: 11px;
+            color: #cbd5e1;
+            margin: 3px 0;
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            padding-bottom: 2px;
+        }
+
+        .popup-label {
+            color: #94a3b8;
+        }
+
+        .popup-value {
+            font-weight: 600;
+            color: #e2e8f0;
+            text-align: right;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
 </head>
-
-
 <body>
 
-<div class="container">
-
-
-<!-- =====================================================
-HEADER
-===================================================== -->
-
-<div class="header">
-
-  <div>
-
-    <div class="title">
-      Mangrove Dashboard Nasional
-    </div>
-
-    <div class="subtitle">
-      Monitoring Penanaman Mangrove Nasional
-    </div>
-
-  </div>
-
-  <div class="update-box">
-
-    Data terakhir diperbarui:
-    <b id="lastUpdate">
-      -
-    </b>
-
-  </div>
-
-</div>
-
-
-<!-- =====================================================
-FILTER
-===================================================== -->
-
-<div class="filters">
-
-  <div class="filter-group">
-
-    <div class="filter-label">
-      Provinsi
-    </div>
-
-    <button
-      id="provinceButton"
-      class="filter-button"
-      type="button"
-    >
-      Semua Provinsi
-    </button>
-
-    <div
-      id="provinceDropdown"
-      class="province-dropdown"
-    >
-
-      <input
-        id="provinceSearch"
-        class="province-search"
-        type="text"
-        placeholder="Cari provinsi..."
-      >
-
-      <div
-        id="provinceList"
-        class="province-list"
-      ></div>
-
-    </div>
-
-  </div>
-
-
-  <div>
-
-    <div class="filter-label">
-      Tahun
-    </div>
-
-    <select
-      id="filterTahun"
-      class="year-select"
-    >
-
-      <option value="All">
-        Semua Tahun
-      </option>
-
-    </select>
-
-  </div>
-
-</div>
-
-
-<!-- =====================================================
-POLYGON CONTROL
-===================================================== -->
-
-<div class="polygon-control">
-
-  <span class="polygon-control-title">
-    Klasifikasi Mangrove:
-  </span>
-
-  <label class="layer-check">
-
-    <input
-      type="checkbox"
-      id="checkLebat"
-      checked
-    >
-
-    <span class="layer-color layer-lebat"></span>
-
-    Mangrove Lebat
-
-  </label>
-
-
-  <label class="layer-check">
-
-    <input
-      type="checkbox"
-      id="checkSedang"
-      checked
-    >
-
-    <span class="layer-color layer-sedang"></span>
-
-    Mangrove Sedang
-
-  </label>
-
-
-  <label class="layer-check">
-
-    <input
-      type="checkbox"
-      id="checkJarang"
-      checked
-    >
-
-    <span class="layer-color layer-jarang"></span>
-
-    Mangrove Jarang
-
-  </label>
-
-</div>
-
-
-<div
-  id="polygonStatus"
-  class="polygon-status"
-></div>
-
-
-<!-- =====================================================
-MAIN VIEW
-===================================================== -->
-
-<div id="mainView">
-
-
-  <!-- KPI -->
-
-  <div class="kpis">
-
-    <div class="card">
-
-      <div class="kpi-label">
-        Total Bibit
-      </div>
-
-      <div
-        class="kpi-value"
-        id="kpiBibit"
-      >
-        0
-      </div>
-
-    </div>
-
-
-    <div class="card">
-
-      <div class="kpi-label">
-        Total Luas
-      </div>
-
-      <div
-        class="kpi-value"
-        id="kpiLuas"
-      >
-        0
-      </div>
-
-    </div>
-
-
-    <div class="card">
-
-      <div class="kpi-label">
-        Provinsi
-      </div>
-
-      <div
-        class="kpi-value"
-        id="statProv"
-      >
-        0
-      </div>
-
-    </div>
-
-
-    <div class="card">
-
-      <div class="kpi-label">
-        Mitra / Perusahaan
-      </div>
-
-      <div
-        class="kpi-value"
-        id="statComp"
-      >
-        0
-      </div>
-
-    </div>
-
-  </div>
-
-
-  <!-- TARGET -->
-
-  <div class="card section-space">
-
-    <div class="card-title">
-      Kontribusi terhadap Target Nasional
-    </div>
-
-    <div
-      id="targetPct"
-      style="
-        font-size:26px;
-        font-weight:bold;
-        color:#4fd1a5;
-      "
-    >
-      0%
-    </div>
-
-    <div class="progress">
-
-      <div
-        id="targetFill"
-        class="progress-fill"
-      ></div>
-
-    </div>
-
-    <div
-      id="targetCurrent"
-      class="target-text"
-    >
-      0 bibit dari target 2 miliar bibit
-    </div>
-
-  </div>
-
-
-  <!-- CHART -->
-
-  <div class="grid2 section-space">
-
-    <div class="card">
-
-      <div class="card-title">
-        Top Provinsi berdasarkan Jumlah Bibit
-      </div>
-
-      <div class="chart-box">
-
-        <canvas id="topProvChart"></canvas>
-
-      </div>
-
-    </div>
-
-
-    <div class="card">
-
-      <div class="card-title">
-        Tren Penanaman per Tahun
-      </div>
-
-      <div class="chart-box">
-
-        <canvas id="trendChart"></canvas>
-
-      </div>
-
-    </div>
-
-  </div>
-
-
-  <!-- MAP -->
-
-  <div class="card section-space">
-
-    <div class="card-title">
-      Sebaran Lokasi Penanaman Mangrove
-    </div>
-
-    <div id="mainMap"></div>
-
-    <div class="legend">
-
-      <div class="legend-item">
-
-        <span
-          class="legend-box"
-          style="background:#4fd1a5"
-        ></span>
-
-        Titik Penanaman
-
-      </div>
-
-
-      <div class="legend-item">
-
-        <span
-          class="legend-box"
-          style="background:#6A1B9A"
-        ></span>
-
-        Mangrove Lebat
-
-      </div>
-
-
-      <div class="legend-item">
-
-        <span
-          class="legend-box"
-          style="background:#F57C00"
-        ></span>
-
-        Mangrove Sedang
-
-      </div>
-
-
-      <div class="legend-item">
-
-        <span
-          class="legend-box"
-          style="background:#1976D2"
-        ></span>
-
-        Mangrove Jarang
-
-      </div>
-
-    </div>
-
-  </div>
-
-
-  <!-- TABLE -->
-
-  <div class="grid2 section-space">
-
-    <div class="card">
-
-      <div class="card-title">
-        Kontribusi per Provinsi
-      </div>
-
-      <table id="provinceTable">
-
-        <thead>
-
-          <tr>
-
-            <th>Provinsi</th>
-
-            <th class="num">
-              Bibit
-            </th>
-
-            <th class="num">
-              Luas (Ha)
-            </th>
-
-          </tr>
-
-        </thead>
-
-        <tbody></tbody>
-
-      </table>
-
-    </div>
-
-
-    <div class="card">
-
-      <div class="card-title">
-        Kontribusi per Perusahaan
-      </div>
-
-      <table id="companyTable">
-
-        <thead>
-
-          <tr>
-
-            <th>Perusahaan</th>
-
-            <th class="num">
-              Bibit
-            </th>
-
-          </tr>
-
-        </thead>
-
-        <tbody></tbody>
-
-      </table>
-
-    </div>
-
-  </div>
-
-</div>
-
-
-<!-- =====================================================
-PROVINCE DETAIL
-===================================================== -->
-
-<div
-  id="provDetailView"
-  style="display:none"
->
-
-  <div
-    class="btn"
-    onclick="showMain()"
-  >
-    ← Kembali ke Dashboard
-  </div>
-
-
-  <div class="detail-title" id="provTitle">
-    Detail Provinsi
-  </div>
-
-  <div
-    class="detail-subtitle"
-    id="breadcrumbProv"
-  ></div>
-
-
-  <div class="kpis">
-
-    <div class="card">
-
-      <div class="kpi-label">
-        Total Bibit
-      </div>
-
-      <div
-        class="kpi-value"
-        id="provBibit"
-      >
-        0
-      </div>
-
-    </div>
-
-
-    <div class="card">
-
-      <div class="kpi-label">
-        Total Luas
-      </div>
-
-      <div
-        class="kpi-value"
-        id="provLuas"
-      >
-        0
-      </div>
-
-    </div>
-
-
-    <div class="card">
-
-      <div class="kpi-label">
-        Kecamatan
-      </div>
-
-      <div
-        class="kpi-value"
-        id="provKec"
-      >
-        0
-      </div>
-
-    </div>
-
-
-    <div class="card">
-
-      <div class="kpi-label">
-        Mitra
-      </div>
-
-      <div
-        class="kpi-value"
-        id="provMitra"
-      >
-        0
-      </div>
-
-    </div>
-
-  </div>
-
-
-  <div class="grid2">
-
-    <div class="card">
-
-      <div class="card-title">
-        Kontribusi per Kecamatan
-      </div>
-
-      <div class="chart-box">
-
-        <canvas id="kecChart"></canvas>
-
-      </div>
-
-    </div>
-
-
-    <div class="card">
-
-      <div class="card-title">
-        Kontribusi Mitra
-      </div>
-
-      <div class="chart-box">
-
-        <canvas id="provDonut"></canvas>
-
-      </div>
-
-    </div>
-
-  </div>
-
-
-  <div class="grid2">
-
-    <div class="card">
-
-      <div class="card-title">
-        Tren Penanaman
-      </div>
-
-      <div class="chart-box">
-
-        <canvas id="provTrendChart"></canvas>
-
-      </div>
-
-    </div>
-
-
-    <div class="card">
-
-      <div class="card-title">
-        Peta Lokasi
-      </div>
-
-      <div id="provMap"></div>
-
-    </div>
-
-  </div>
-
-
-  <div class="card">
-
-    <div class="card-title">
-      Detail Kecamatan
-    </div>
-
-    <table id="kecTable">
-
-      <thead>
-
-        <tr>
-
-          <th>Kecamatan</th>
-
-          <th class="num">
-            Bibit
-          </th>
-
-          <th class="num">
-            Luas (Ha)
-          </th>
-
-        </tr>
-
-      </thead>
-
-      <tbody></tbody>
-
-    </table>
-
-  </div>
-
-</div>
-
-
-<!-- =====================================================
-COMPANY DETAIL
-===================================================== -->
-
-<div
-  id="compDetailView"
-  style="display:none"
->
-
-  <div
-    class="btn"
-    onclick="showMain()"
-  >
-    ← Kembali ke Dashboard
-  </div>
-
-
-  <div class="detail-title" id="compTitle">
-    Detail Perusahaan
-  </div>
-
-  <div
-    class="detail-subtitle"
-    id="breadcrumbComp"
-  ></div>
-
-
-  <div class="kpis">
-
-    <div class="card">
-
-      <div class="kpi-label">
-        Total Bibit
-      </div>
-
-      <div
-        class="kpi-value"
-        id="compBibit"
-      >
-        0
-      </div>
-
-    </div>
-
-
-    <div class="card">
-
-      <div class="kpi-label">
-        Total Luas
-      </div>
-
-      <div
-        class="kpi-value"
-        id="compLuas"
-      >
-        0
-      </div>
-
-    </div>
-
-
-    <div class="card">
-
-      <div class="kpi-label">
-        Provinsi
-      </div>
-
-      <div
-        class="kpi-value"
-        id="compProvCount"
-      >
-        0
-      </div>
-
-    </div>
-
-
-    <div class="card">
-
-      <div class="kpi-label">
-        Share Nasional
-      </div>
-
-      <div
-        class="kpi-value"
-        id="compShare"
-      >
-        0%
-      </div>
-
-    </div>
-
-  </div>
-
-
-  <div class="grid2">
-
-    <div class="card">
-
-      <div class="card-title">
-        Kontribusi per Provinsi
-      </div>
-
-      <div class="chart-box">
-
-        <canvas id="compProvChart"></canvas>
-
-      </div>
-
-    </div>
-
-
-    <div class="card">
-
-      <div class="card-title">
-        Tren Penanaman
-      </div>
-
-      <div class="chart-box">
-
-        <canvas id="compTrendMini"></canvas>
-
-      </div>
-
-    </div>
-
-  </div>
-
-
-  <div class="card">
-
-    <div class="card-title">
-      Peta Lokasi Penanaman
-    </div>
-
-    <div id="compMap"></div>
-
-  </div>
-
-
-  <div class="card section-space">
-
-    <div class="card-title">
-      Provinsi Kontribusi Perusahaan
-    </div>
-
-    <table id="compProvTable">
-
-      <thead>
-
-        <tr>
-
-          <th>Provinsi</th>
-
-          <th class="num">
-            Bibit
-          </th>
-
-        </tr>
-
-      </thead>
-
-      <tbody></tbody>
-
-    </table>
-
-  </div>
-
-</div>
-
-
-</div>
-
-
-<script>
-
-
-/* =========================================================
-GOOGLE SPREADSHEET
-========================================================= */
-
-const SHEET_URL =
-"https://docs.google.com/spreadsheets/d/e/2PACX-1vTLlhT3kN4L2qe9rC9rqpySDMDEYVRD2kM-vejjaMwhdcXVaG9-1EBdDMVwvPfv_WmXT8U_FD8FvxFE/pub?output=csv";
-
-
-const TARGET_NASIONAL =
-2000000000;
-
-
-const YEARS = [
-  2021,
-  2022,
-  2023,
-  2024,
-  2025,
-  2026
-];
-
-
-/* =========================================================
-DATA
-========================================================= */
-
-let plantingData = [];
-
-let mainMap = null;
-let provMapObj = null;
-let compMapObj = null;
-
-let markersLayer = null;
-
-let polygonLebat = null;
-let polygonSedang = null;
-let polygonJarang = null;
-
-let loadedPolygonProvince = null;
-
-let topProvChartObj = null;
-let trendChartObj = null;
-let kecChartObj = null;
-let provDonutObj = null;
-let provTrendChartObj = null;
-let compProvChartObj = null;
-let compTrendMiniObj = null;
-
-
-/* =========================================================
-DAFTAR PROVINSI
-========================================================= */
-
-const PROVINCE_FILES = {
-
-  ACEH:"Aceh",
-  BALI:"Bali",
-  BANTEN:"Banten",
-  BENGKULU:"Bengkulu",
-  DAERAH_ISTIMEWA_YOGYAKARTA:"Daerah Istimewa Yogyakarta",
-  DAERAH_KHUSUS_JAKARTA:"Daerah Khusus Jakarta",
-  GORONTALO:"Gorontalo",
-  JAMBI:"Jambi",
-  JAWA_BARAT:"Jawa Barat",
-  JAWA_TENGAH:"Jawa Tengah",
-  JAWA_TIMUR:"Jawa Timur",
-  KALIMANTAN_BARAT:"Kalimantan Barat",
-  KALIMANTAN_SELATAN:"Kalimantan Selatan",
-  KALIMANTAN_TENGAH:"Kalimantan Tengah",
-  KALIMANTAN_TIMUR:"Kalimantan Timur",
-  KALIMANTAN_UTARA:"Kalimantan Utara",
-  KEPULAUAN_BANGKA_BELITUNG:"Kepulauan Bangka Belitung",
-  KEPULAUAN_RIAU:"Kepulauan Riau",
-  LAMPUNG:"Lampung",
-  MALUKU:"Maluku",
-  MALUKU_UTARA:"Maluku Utara",
-  NUSA_TENGGARA_BARAT:"Nusa Tenggara Barat",
-  NUSA_TENGGARA_TIMUR:"Nusa Tenggara Timur",
-  PAPUA:"Papua",
-  PAPUA_BARAT:"Papua Barat",
-  PAPUA_BARAT_DAYA:"Papua Barat Daya",
-  PAPUA_SELATAN:"Papua Selatan",
-  PAPUA_TENGAH:"Papua Tengah",
-  RIAU:"Riau",
-  SULAWESI_BARAT:"Sulawesi Barat",
-  SULAWESI_SELATAN:"Sulawesi Selatan",
-  SULAWESI_TENGAH:"Sulawesi Tengah",
-  SULAWESI_TENGGARA:"Sulawesi Tenggara",
-  SULAWESI_UTARA:"Sulawesi Utara",
-  SUMATERA_BARAT:"Sumatera Barat",
-  SUMATERA_SELATAN:"Sumatera Selatan",
-  SUMATERA_UTARA:"Sumatera Utara"
-
-};
-
-
-/* =========================================================
-BASE URL POLYGON
-========================================================= */
-
-const MANGROVE_BASE_URL =
-"https://cdn.jsdelivr.net/gh/sintaergunap-hue/Dashboard-Penanaman-Mangrove-Nasional@main/";
-
-
-/* =========================================================
-FORMAT
-========================================================= */
-
-function fmtNum(n){
-
-  return Math.round(
-    Number(n) || 0
-  ).toLocaleString("id-ID");
-
-}
-
-
-function fmtHa(n){
-
-  return Number(n || 0)
-    .toLocaleString(
-      "id-ID",
-      {
-        minimumFractionDigits:2,
-        maximumFractionDigits:2
-      }
-    );
-
-}
-
-
-function fmtJt(n){
-
-  n = Number(n) || 0;
-
-  if(n >= 1000000){
-
-    return (
-      n / 1000000
-    ).toLocaleString(
-      "id-ID",
-      {
-        minimumFractionDigits:1,
-        maximumFractionDigits:2
-      }
-    ) + " Jt";
-
-  }
-
-  return fmtNum(n);
-
-}
-
-
-/* =========================================================
-CSV PARSER
-========================================================= */
-
-function parseCSV(text){
-
-  const rows = [];
-
-  let row = [];
-  let cell = "";
-  let insideQuotes = false;
-
-
-  for(
-    let i=0;
-    i<text.length;
-    i++
-  ){
-
-    const char = text[i];
-    const next = text[i+1];
-
-
-    if(
-      char === '"' &&
-      insideQuotes &&
-      next === '"'
-    ){
-
-      cell += '"';
-      i++;
-      continue;
-
-    }
-
-
-    if(char === '"'){
-
-      insideQuotes =
-        !insideQuotes;
-
-      continue;
-
-    }
-
-
-    if(
-      char === "," &&
-      !insideQuotes
-    ){
-
-      row.push(cell);
-      cell = "";
-
-      continue;
-
-    }
-
-
-    if(
-      (
-        char === "\n" ||
-        char === "\r"
-      ) &&
-      !insideQuotes
-    ){
-
-      if(
-        char === "\r" &&
-        next === "\n"
-      )
-        i++;
-
-
-      row.push(cell);
-
-      rows.push(row);
-
-      row = [];
-      cell = "";
-
-      continue;
-
-    }
-
-
-    cell += char;
-
-  }
-
-
-  if(
-    cell.length ||
-    row.length
-  ){
-
-    row.push(cell);
-    rows.push(row);
-
-  }
-
-
-  if(!rows.length)
-    return [];
-
-
-  const headers =
-    rows[0].map(
-      h => h.trim()
-    );
-
-
-  return rows
-    .slice(1)
-    .filter(
-      r =>
-        r.some(
-          v =>
-            String(v).trim() !== ""
-        )
-    )
-    .map(r => {
-
-      const obj = {};
-
-      headers.forEach(
-        (h,i) => {
-
-          obj[h] =
-            r[i] !== undefined
-              ? String(r[i]).trim()
-              : "";
-
-        }
-      );
-
-      return obj;
-
-    });
-
-}
-
-
-/* =========================================================
-NORMALIZE
-========================================================= */
-
-function normalizeData(raw){
-
-  return raw.map(
-    (r,index) => {
-
-      return {
-
-        objectid:
-          Number(r.OBJECTID) ||
-          index + 1,
-
-        name:
-          r.Name ||
-          `Lokasi ${index+1}`,
-
-        provinsi:
-          r.Provinsi ||
-          "Tidak diketahui",
-
-        kabkota:
-          r.KabKota ||
-          "",
-
-        kecamatan:
-          r.Kecamatan ||
-          "",
-
-        desa:
-          r.Desa ||
-          "",
-
-        bibit:
-          Number(
-            String(
-              r.Jumlah_Bib ||
-              "0"
-            ).replace(
-              /[^\d.-]/g,
-              ""
-            )
-          ) || 0,
-
-        jenis:
-          r.Jenis ||
-          "",
-
-        luasPolygon:
-          Number(
-            String(
-              r.Luas_Polyg ||
-              "0"
-            ).replace(",",".")
-          ) || 0,
-
-        totalLuas:
-          Number(
-            String(
-              r.Total_Luas ||
-              "0"
-            ).replace(",",".")
-          ) || 0,
-
-        perusahaan:
-          r.Perusahaan ||
-          "Tidak diketahui",
-
-        penanam:
-          r.Penanam ||
-          "",
-
-        personil:
-          Number(
-            r.Personil
-          ) || 0,
-
-        pihakTerl:
-          r.Pihak_Terl ||
-          "",
-
-        tahun:
-          Number(
-            r.Tahun
-          ) || null,
-
-        foto:
-          r.Foto ||
-          "",
-
-        lat:
-          Number(
-            String(
-              r.Lat || ""
-            ).replace(",",".")
-          ),
-
-        lng:
-          Number(
-            String(
-              r.Long || ""
-            ).replace(",",".")
-          ),
-
-        lastUpdate:
-          r.Last_Update ||
-          ""
-
-      };
-
-    }
-  );
-
-}
-
-
-/* =========================================================
-LOAD SPREADSHEET
-========================================================= */
-
-async function loadSpreadsheet(){
-
-  try{
-
-    const response =
-      await fetch(
-        SHEET_URL +
-        "&cache=" +
-        Date.now()
-      );
-
-
-    if(!response.ok)
-      throw new Error(
-        "Gagal mengambil spreadsheet"
-      );
-
-
-    const csvText =
-      await response.text();
-
-
-    const rawData =
-      parseCSV(csvText);
-
-
-    if(!rawData.length)
-      throw new Error(
-        "Data spreadsheet kosong"
-      );
-
-
-    plantingData =
-      normalizeData(rawData);
-
-
-    updateLastUpdate();
-
-    populateFilters();
-
-    updateMainDashboard();
-
-    initializeMainMap();
-
-  }
-  catch(error){
-
-    console.error(error);
-
-    alert(
-      "Data Google Spreadsheet gagal dimuat.\n\n" +
-      "Pastikan Google Sheet sudah dipublish sebagai CSV."
-    );
-
-  }
-
-}
-
-
-/* =========================================================
-LAST UPDATE
-========================================================= */
-
-function updateLastUpdate(){
-
-  const dates =
-    plantingData
-      .map(d => d.lastUpdate)
-      .filter(Boolean);
-
-
-  const el =
-    document.getElementById(
-      "lastUpdate"
-    );
-
-
-  if(!el)
-    return;
-
-
-  if(!dates.length){
-
-    el.textContent =
-      "Belum tersedia";
-
-    return;
-
-  }
-
-
-  const latest =
-    dates.sort(
-      (a,b) =>
-        new Date(b) -
-        new Date(a)
-    )[0];
-
-
-  el.textContent =
-    latest;
-
-}
-
-
-/* =========================================================
-UNIQUE VALUES
-========================================================= */
-
-function uniqueValues(
-  data,
-  key
-){
-
-  return [
-    ...new Set(
-      data
-        .map(
-          d => d[key]
-        )
-        .filter(
-          v =>
-            v !== null &&
-            v !== undefined &&
-            v !== ""
-        )
-    )
-  ];
-
-}
-
-
-/* =========================================================
-POPULATE FILTER
-========================================================= */
-
-function populateFilters(){
-
-  const provinceList =
-    document.getElementById(
-      "provinceList"
-    );
-
-
-  const yearSelect =
-    document.getElementById(
-      "filterTahun"
-    );
-
-
-  provinceList.innerHTML = "";
-
-
-  Object.entries(
-    PROVINCE_FILES
-  )
-  .sort(
-    (a,b) =>
-      a[1].localeCompare(b[1])
-  )
-  .forEach(
-    ([code,name]) => {
-
-      const item =
-        document.createElement(
-          "div"
-        );
-
-      item.className =
-        "province-option";
-
-      item.dataset.code =
-        code;
-
-      item.textContent =
-        name;
-
-
-      item.onclick =
-        function(){
-
-          selectProvince(
-            code,
-            name
-          );
-
-        };
-
-
-      provinceList.appendChild(
-        item
-      );
-
-    }
-  );
-
-
-  yearSelect.innerHTML =
-    `
-      <option value="All">
-        Semua Tahun
-      </option>
-    `;
-
-
-  uniqueValues(
-    plantingData,
-    "tahun"
-  )
-  .filter(Boolean)
-  .sort(
-    (a,b) => a-b
-  )
-  .forEach(
-    y => {
-
-      const option =
-        document.createElement(
-          "option"
-        );
-
-      option.value = y;
-
-      option.textContent = y;
-
-      yearSelect.appendChild(
-        option
-      );
-
-    }
-  );
-
-
-  yearSelect.onchange =
-    updateMainDashboard;
-
-}
-
-
-/* =========================================================
-PROVINCE SEARCH
-========================================================= */
-
-document
-  .getElementById(
-    "provinceSearch"
-  )
-  .addEventListener(
-    "input",
-    function(){
-
-      const keyword =
-        this.value
-          .toLowerCase()
-          .trim();
-
-
-      document
-        .querySelectorAll(
-          ".province-option"
-        )
-        .forEach(
-          option => {
-
-            const text =
-              option.textContent
-                .toLowerCase();
-
-
-            option.style.display =
-              text.includes(keyword)
-                ? "block"
-                : "none";
-
-          }
-        );
-
-    }
-  );
-
-
-/* =========================================================
-PROVINCE DROPDOWN
-========================================================= */
-
-document
-  .getElementById(
-    "provinceButton"
-  )
-  .addEventListener(
-    "click",
-    function(){
-
-      document
-        .getElementById(
-          "provinceDropdown"
-        )
-        .classList.toggle(
-          "show"
-        );
-
-      document
-        .getElementById(
-          "provinceSearch"
-        )
-        .focus();
-
-    }
-  );
-
-
-document.addEventListener(
-  "click",
-  function(e){
-
-    const group =
-      document.querySelector(
-        ".filter-group"
-      );
-
-
-    if(
-      !group.contains(e.target)
-    ){
-
-      document
-        .getElementById(
-          "provinceDropdown"
-        )
-        .classList.remove(
-          "show"
-        );
-
-    }
-
-  }
-);
-
-
-/* =========================================================
-SELECT PROVINCE
-========================================================= */
-
-function selectProvince(
-  code,
-  name
-){
-
-  const button =
-    document.getElementById(
-      "provinceButton"
-    );
-
-
-  button.textContent =
-    name;
-
-
-  document
-    .getElementById(
-      "provinceDropdown"
-    )
-    .classList.remove(
-      "show"
-    );
-
-
-  document
-    .getElementById(
-      "provinceSearch"
-    ).value = "";
-
-
-  document
-    .querySelectorAll(
-      ".province-option"
-    )
-    .forEach(
-      option => {
-
-        option.classList.toggle(
-          "active",
-          option.dataset.code === code
-        );
-
-        option.style.display =
-          "block";
-
-      }
-    );
-
-
-  updateMainDashboard();
-
-
-  loadMangrovePolygon(
-    code
-  );
-
-}
-
-
-/* =========================================================
-GET FILTERED DATA
-========================================================= */
-
-function getFilteredData(){
-
-  const selectedButton =
-    document.getElementById(
-      "provinceButton"
-    );
-
-
-  const selectedName =
-    selectedButton.textContent.trim();
-
-
-  const tahun =
-    document.getElementById(
-      "filterTahun"
-    ).value;
-
-
-  if(
-    selectedName ===
-    "Semua Provinsi"
-  ){
-
-    return plantingData.filter(
-      d =>
-        tahun === "All" ||
-        String(d.tahun) ===
-        String(tahun)
-    );
-
-  }
-
-
-  return plantingData.filter(
-    d => {
-
-      const provOK =
-        d.provinsi ===
-        selectedName;
-
-
-      const yearOK =
-        tahun === "All" ||
-        String(d.tahun) ===
-        String(tahun);
-
-
-      return provOK && yearOK;
-
-    }
-  );
-
-}
-
-
-/* =========================================================
-MAIN DASHBOARD
-========================================================= */
-
-function updateMainDashboard(){
-
-  const data =
-    getFilteredData();
-
-
-  const totalBibit =
-    data.reduce(
-      (s,d) =>
-        s+d.bibit,
-      0
-    );
-
-
-  const totalLuas =
-    data.reduce(
-      (s,d) =>
-        s+d.luasPolygon,
-      0
-    );
-
-
-  const provinces = {};
-
-  const companies = {};
-
-
-  data.forEach(d => {
-
-    if(!provinces[d.provinsi])
-      provinces[d.provinsi] = {
-        bibit:0,
-        luas:0
-      };
-
-
-    provinces[d.provinsi].bibit +=
-      d.bibit;
-
-
-    provinces[d.provinsi].luas +=
-      d.luasPolygon;
-
-
-    if(!companies[d.perusahaan])
-      companies[d.perusahaan] = 0;
-
-
-    companies[d.perusahaan] +=
-      d.bibit;
-
-  });
-
-
-  document.getElementById(
-    "kpiBibit"
-  ).textContent =
-    fmtJt(totalBibit);
-
-
-  document.getElementById(
-    "kpiLuas"
-  ).textContent =
-    fmtHa(totalLuas) +
-    " Ha";
-
-
-  document.getElementById(
-    "statProv"
-  ).textContent =
-    Object.keys(provinces).length;
-
-
-  document.getElementById(
-    "statComp"
-  ).textContent =
-    Object.keys(companies).length;
-
-
-  const pct =
-    totalBibit /
-    TARGET_NASIONAL *
-    100;
-
-
-  document.getElementById(
-    "targetPct"
-  ).textContent =
-    pct.toLocaleString(
-      "id-ID",
-      {
-        minimumFractionDigits:2,
-        maximumFractionDigits:2
-      }
-    ) + "%";
-
-
-  document.getElementById(
-    "targetFill"
-  ).style.width =
-    Math.max(
-      Math.min(pct,100),
-      .5
-    ) + "%";
-
-
-  document.getElementById(
-    "targetCurrent"
-  ).textContent =
-    fmtNum(totalBibit) +
-    " bibit dari target 2.000.000.000 bibit";
-
-
-  updateProvinceTable(
-    provinces
-  );
-
-
-  updateCompanyTable(
-    companies
-  );
-
-
-  updateTopProvinceChart(
-    provinces
-  );
-
-
-  updateTrendChart(
-    data
-  );
-
-
-  updateMainMarkers(
-    data
-  );
-
-}
-
-
-/* =========================================================
-PROVINCE TABLE
-========================================================= */
-
-function updateProvinceTable(
-  provinces
-){
-
-  const tbody =
-    document.querySelector(
-      "#provinceTable tbody"
-    );
-
-
-  tbody.innerHTML = "";
-
-
-  Object.entries(provinces)
-
-    .sort(
-      (a,b) =>
-        b[1].bibit -
-        a[1].bibit
-    )
-
-    .forEach(
-      ([name,p]) => {
-
-        const tr =
-          document.createElement(
-            "tr"
-          );
-
-
-        tr.innerHTML = `
-
-          <td>${name}</td>
-
-          <td class="num">
-            ${fmtNum(p.bibit)}
-          </td>
-
-          <td class="num">
-            ${fmtHa(p.luas)}
-          </td>
-
-        `;
-
-
-        tr.onclick =
-          () =>
-            showProvDetailByName(
-              name
-            );
-
-
-        tbody.appendChild(
-          tr
-        );
-
-      }
-    );
-
-}
-
-
-/* =========================================================
-COMPANY TABLE
-========================================================= */
-
-function updateCompanyTable(
-  companies
-){
-
-  const tbody =
-    document.querySelector(
-      "#companyTable tbody"
-    );
-
-
-  tbody.innerHTML = "";
-
-
-  Object.entries(companies)
-
-    .sort(
-      (a,b) =>
-        b[1] -
-        a[1]
-    )
-
-    .forEach(
-      ([name,bibit]) => {
-
-        const tr =
-          document.createElement(
-            "tr"
-          );
-
-
-        tr.innerHTML = `
-
-          <td>${name}</td>
-
-          <td class="num">
-            ${fmtNum(bibit)}
-          </td>
-
-        `;
-
-
-        tr.onclick =
-          () =>
-            showCompDetailByName(
-              name
-            );
-
-
-        tbody.appendChild(
-          tr
-        );
-
-      }
-    );
-
-}
-
-
-/* =========================================================
-TOP PROVINCE CHART
-========================================================= */
-
-function updateTopProvinceChart(
-  provinces
-){
-
-  const canvas =
-    document.getElementById(
-      "topProvChart"
-    );
-
-
-  if(topProvChartObj)
-    topProvChartObj.destroy();
-
-
-  const sorted =
-    Object.entries(provinces)
-      .sort(
-        (a,b) =>
-          b[1].bibit -
-          a[1].bibit
-      )
-      .slice(0,8);
-
-
-  topProvChartObj =
-    new Chart(
-      canvas.getContext("2d"),
-      {
-
-        type:"bar",
-
-        data:{
-
-          labels:
-            sorted.map(
-              ([name]) =>
-                name
-            ),
-
-          datasets:[{
-
-            data:
-              sorted.map(
-                ([,v]) =>
-                  v.bibit
-              ),
-
-            backgroundColor:
-              "#4fd1a5",
-
-            borderRadius:5
-
-          }]
-
-        },
-
-        options:{
-
-          indexAxis:"y",
-
-          responsive:true,
-
-          maintainAspectRatio:false,
-
-          plugins:{
-            legend:{
-              display:false
-            }
-          }
-
-        }
-
-      }
-    );
-
-}
-
-
-/* =========================================================
-TREND
-========================================================= */
-
-function updateTrendChart(data){
-
-  const canvas =
-    document.getElementById(
-      "trendChart"
-    );
-
-
-  if(trendChartObj)
-    trendChartObj.destroy();
-
-
-  const values =
-    YEARS.map(
-      year =>
-        data
-          .filter(
-            d =>
-              Number(d.tahun) ===
-              year
-          )
-          .reduce(
-            (s,d) =>
-              s+d.bibit,
-            0
-          )
-    );
-
-
-  trendChartObj =
-    new Chart(
-      canvas.getContext("2d"),
-      {
-
-        type:"line",
-
-        data:{
-
-          labels:YEARS,
-
-          datasets:[{
-
-            data:values,
-
-            borderColor:
-              "#4fd1a5",
-
-            backgroundColor:
-              "rgba(79,209,165,.15)",
-
-            fill:true,
-
-            tension:.35
-
-          }]
-
-        },
-
-        options:{
-
-          responsive:true,
-
-          maintainAspectRatio:false,
-
-          plugins:{
-            legend:{
-              display:false
-            }
-          }
-
-        }
-
-      }
-
-    );
-
-}
-
-
-/* =========================================================
-MAIN MAP
-========================================================= */
-
-
-/* =========================================================
-   DARK BASEMAP
-   OPENSTREETMAP - TANPA API KEY
-   ========================================================= */
-
-function addDarkBaseMap(map){
-
-  L.tileLayer(
-    "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
-    {
-      maxZoom:19,
-      className:"dark-map-tiles",
-      attribution:
-        '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a> contributors'
-    }
-  ).addTo(map);
-
-}
-
-function initializeMainMap(){
-
-  if(mainMap)
-    return;
-
-
-  mainMap =
-    L.map(
-      "mainMap"
-    ).setView(
-      [-2.5,118],
-      5
-    );
-
-
-  addDarkBaseMap(mainMap);
-
-
-  markersLayer =
-    L.layerGroup()
-      .addTo(mainMap);
-
-
-  updateMainMarkers(
-    plantingData
-  );
-
-}
-
-
-/* =========================================================
-MAIN MARKERS
-========================================================= */
-
-function updateMainMarkers(data){
-
-  if(!markersLayer)
-    return;
-
-
-  markersLayer.clearLayers();
-
-
-  data.forEach(d => {
-
-    if(
-      !Number.isFinite(d.lat) ||
-      !Number.isFinite(d.lng)
-    )
-      return;
-
-
-    const marker =
-      L.circleMarker(
-        [d.lat,d.lng],
-        {
-          radius:7,
-          color:"#fff",
-          weight:1,
-          fillColor:"#4fd1a5",
-          fillOpacity:.9
-        }
-      );
-
-
-    marker.addTo(
-      markersLayer
-    );
-
-
-    marker.bindPopup(`
-
-      <div class="popup-title">
-        ${d.name}
-      </div>
-
-      <div class="popup-row">
-        Provinsi:
-        <b>${d.provinsi}</b>
-      </div>
-
-      <div class="popup-row">
-        Kabupaten/Kota:
-        <b>${d.kabkota}</b>
-      </div>
-
-      <div class="popup-row">
-        Kecamatan:
-        <b>${d.kecamatan}</b>
-      </div>
-
-      <div class="popup-row">
-        Desa:
-        <b>${d.desa}</b>
-      </div>
-
-      <div class="popup-row">
-        Bibit:
-        <b>${fmtNum(d.bibit)}</b>
-      </div>
-
-      <div class="popup-row">
-        Luas:
-        <b>${fmtHa(d.luasPolygon)} Ha</b>
-      </div>
-
-      <div class="popup-row">
-        Perusahaan:
-        <b>${d.perusahaan}</b>
-      </div>
-
-      <div class="popup-row">
-        Tahun:
-        <b>${d.tahun || "-"}</b>
-      </div>
-
-      <div
-        style="
-          margin-top:8px;
-          color:#158a70;
-          cursor:pointer;
-        "
-        onclick="
-          showProvDetailByName(
-            '${String(d.provinsi).replace(/'/g,"\\'")}'
-          )
-        "
-      >
-        Lihat Detail Provinsi →
-      </div>
-
-    `);
-
-  });
-
-}
-
-
-/* =========================================================
-LOAD SCRIPT
-========================================================= */
-
-function loadScript(url){
-
-  return new Promise(
-    function(resolve,reject){
-
-      const script =
-        document.createElement(
-          "script"
-        );
-
-
-      script.src =
-        url +
-        "?v=" +
-        Date.now();
-
-
-      script.onload =
-        function(){
-          resolve();
-        };
-
-
-      script.onerror =
-        function(){
-          reject(
-            new Error(
-              "Gagal load: " +
-              url
-            )
-          );
-        };
-
-
-      document.head.appendChild(
-        script
-      );
-
-    }
-  );
-
-}
-
-
-/* =========================================================
-CLEAR POLYGON
-========================================================= */
-
-function clearMangrovePolygon(){
-
-  if(polygonLebat){
-
-    mainMap.removeLayer(
-      polygonLebat
-    );
-
-    polygonLebat = null;
-
-  }
-
-
-  if(polygonSedang){
-
-    mainMap.removeLayer(
-      polygonSedang
-    );
-
-    polygonSedang = null;
-
-  }
-
-
-  if(polygonJarang){
-
-    mainMap.removeLayer(
-      polygonJarang
-    );
-
-    polygonJarang = null;
-
-  }
-
-
-  loadedPolygonProvince =
-    null;
-
-}
-
-
-/* =========================================================
-UPDATE POLYGON VISIBILITY
-========================================================= */
-
-function updatePolygonVisibility(){
-
-  if(!mainMap)
-    return;
-
-
-  const showLebat =
-    document.getElementById(
-      "checkLebat"
-    ).checked;
-
-
-  const showSedang =
-    document.getElementById(
-      "checkSedang"
-    ).checked;
-
-
-  const showJarang =
-    document.getElementById(
-      "checkJarang"
-    ).checked;
-
-
-  if(
-    polygonLebat
-  ){
-
-    if(showLebat){
-
-      if(!mainMap.hasLayer(
-        polygonLebat
-      )){
-        polygonLebat.addTo(
-          mainMap
-        );
-      }
-
-    }
-    else{
-
-      if(mainMap.hasLayer(
-        polygonLebat
-      )){
-        mainMap.removeLayer(
-          polygonLebat
-        );
-      }
-
-    }
-
-  }
-
-
-  if(
-    polygonSedang
-  ){
-
-    if(showSedang){
-
-      if(!mainMap.hasLayer(
-        polygonSedang
-      )){
-        polygonSedang.addTo(
-          mainMap
-        );
-      }
-
-    }
-    else{
-
-      if(mainMap.hasLayer(
-        polygonSedang
-      )){
-        mainMap.removeLayer(
-          polygonSedang
-        );
-      }
-
-    }
-
-  }
-
-
-  if(
-    polygonJarang
-  ){
-
-    if(showJarang){
-
-      if(!mainMap.hasLayer(
-        polygonJarang
-      )){
-        polygonJarang.addTo(
-          mainMap
-        );
-      }
-
-    }
-    else{
-
-      if(mainMap.hasLayer(
-        polygonJarang
-      )){
-        mainMap.removeLayer(
-          polygonJarang
-        );
-      }
-
-    }
-
-  }
-
-
-  bringMarkersToFront();
-
-}
-
-
-/* =========================================================
-BRING MARKERS TO FRONT
-========================================================= */
-
-function bringMarkersToFront(){
-
-  if(!markersLayer)
-    return;
-
-
-  /*
-    markersLayer adalah L.layerGroup.
-    Jadi tidak mempunyai bringToFront().
-    Kita harus memanggil bringToFront()
-    pada setiap marker di dalam layer.
-  */
-
-  markersLayer.eachLayer(
-    function(layer){
-
-      if(
-        layer &&
-        typeof layer.bringToFront ===
-        "function"
-      ){
-
-        layer.bringToFront();
-
-      }
-
-    }
-  );
-
-}
-
-
-/* =========================================================
-LOAD MANGROVE POLYGON
-========================================================= */
-
-async function loadMangrovePolygon(
-  province
-){
-
-  if(!mainMap)
-    return;
-
-
-  if(
-    loadedPolygonProvince ===
-    province
-  ){
-
-    updatePolygonVisibility();
-
-    return;
-
-  }
-
-
-  clearMangrovePolygon();
-
-
-  const provinceName =
-    PROVINCE_FILES[province];
-
-
-  const status =
-    document.getElementById(
-      "polygonStatus"
-    );
-
-
-  status.textContent =
-    "⏳ Memuat polygon " +
-    provinceName +
-    "...";
-
-
-  const variableLebat =
-    "KTTJ_MANGROVELEBAT_2_" +
-    province;
-
-
-  const variableSedang =
-    "KTTJ_MANGROVESEDANG_3_" +
-    province;
-
-
-  const variableJarang =
-    "KTTJ_MANGROVEJARANG_4_" +
-    province;
-
-
-  const urlLebat =
-    MANGROVE_BASE_URL +
-    "Mangrove%20Lebat/" +
-    "KTTJ_MANGROVELEBAT_2_" +
-    province +
-    ".js";
-
-
-  const urlSedang =
-    MANGROVE_BASE_URL +
-    "Mangrove%20Sedang/" +
-    "KTTJ_MANGROVESEDANG_3_" +
-    province +
-    ".js";
-
-
-  const urlJarang =
-    MANGROVE_BASE_URL +
-    "Mangrove%20Jarang/" +
-    "KTTJ_MANGROVEJARANG_4_" +
-    province +
-    ".js";
-
-
-  try{
-
-    /*
-      LOAD SATU PER SATU.
-      Kalau salah satu file tidak ada,
-      proses akan masuk catch.
-    */
-
-    await loadScript(
-      urlLebat
-    );
-
-    await loadScript(
-      urlSedang
-    );
-
-    await loadScript(
-      urlJarang
-    );
-
-
-    const dataLebat =
-      window[variableLebat];
-
-
-    const dataSedang =
-      window[variableSedang];
-
-
-    const dataJarang =
-      window[variableJarang];
-
-
-    /* ==========================
-       LEBAT
-    ========================== */
-
-    if(dataLebat){
-
-      polygonLebat =
-        L.geoJSON(
-          dataLebat,
-          {
-            style:{
-              color:"#6A1B9A",
-              fillColor:"#6A1B9A",
-              fillOpacity:.45,
-              weight:1
-            }
-          }
-        ).addTo(mainMap);
-
-    }
-
-
-    /* ==========================
-       SEDANG
-    ========================== */
-
-    if(dataSedang){
-
-      polygonSedang =
-        L.geoJSON(
-          dataSedang,
-          {
-            style:{
-              color:"#F57C00",
-              fillColor:"#F57C00",
-              fillOpacity:.45,
-              weight:1
-            }
-          }
-        ).addTo(mainMap);
-
-    }
-
-
-    /* ==========================
-       JARANG
-    ========================== */
-
-    if(dataJarang){
-
-      polygonJarang =
-        L.geoJSON(
-          dataJarang,
-          {
-            style:{
-              color:"#1976D2",
-              fillColor:"#1976D2",
-              fillOpacity:.45,
-              weight:1
-            }
-          }
-        ).addTo(mainMap);
-
-    }
-
-
-    /* ==========================
-       VISIBILITY CHECKBOX
-    ========================== */
-
-    updatePolygonVisibility();
-
-
-    /* ==========================
-       FIT BOUNDS
-    ========================== */
-
-    const layers = [];
-
-
-    if(polygonLebat)
-      layers.push(
-        polygonLebat
-      );
-
-
-    if(polygonSedang)
-      layers.push(
-        polygonSedang
-      );
-
-
-    if(polygonJarang)
-      layers.push(
-        polygonJarang
-      );
-
-
-    if(layers.length){
-
-      const group =
-        L.featureGroup(
-          layers
-        );
-
-
-      if(
-        group.getBounds().isValid()
-      ){
-
-        mainMap.fitBounds(
-          group.getBounds(),
-          {
-            padding:[30,30],
-            maxZoom:10
-          }
-        );
-
-      }
-
-    }
-
-
-    /*
-      BAWA TITIK KE DEPAN.
-      Ini menggantikan:
-      markersLayer.bringToFront()
-    */
-
-    bringMarkersToFront();
-
-
-    loadedPolygonProvince =
-      province;
-
-
-    status.innerHTML =
-      "✅ Polygon " +
-      provinceName +
-      " berhasil dimuat";
-
-
-  }
-  catch(error){
-
-    console.error(
-      "Polygon error:",
-      error
-    );
-
-
-    /*
-      Kalau polygon tidak tersedia,
-      dashboard tetap jalan.
-    */
-
-    status.innerHTML =
-      "⚠ Polygon " +
-      provinceName +
-      " tidak tersedia";
-
-
-    clearMangrovePolygon();
-
-  }
-
-}
-
-
-/* =========================================================
-CHECKBOX EVENT
-========================================================= */
-
-document
-  .getElementById(
-    "checkLebat"
-  )
-  .addEventListener(
-    "change",
-    updatePolygonVisibility
-  );
-
-
-document
-  .getElementById(
-    "checkSedang"
-  )
-  .addEventListener(
-    "change",
-    updatePolygonVisibility
-  );
-
-
-document
-  .getElementById(
-    "checkJarang"
-  )
-  .addEventListener(
-    "change",
-    updatePolygonVisibility
-  );
-
-
-/* =========================================================
-PROVINCE DETAIL
-========================================================= */
-
-function showProvDetailByName(
-  name
-){
-
-  const data =
-    plantingData.filter(
-      d =>
-        d.provinsi === name
-    );
-
-
-  if(!data.length)
-    return;
-
-
-  hideAll();
-
-
-  document.getElementById(
-    "provDetailView"
-  ).style.display =
-    "block";
-
-
-  document.getElementById(
-    "breadcrumbProv"
-  ).textContent =
-    name;
-
-
-  document.getElementById(
-    "provTitle"
-  ).textContent =
-    "Detail Kontribusi Provinsi " +
-    name;
-
-
-  const totalBibit =
-    data.reduce(
-      (s,d) =>
-        s+d.bibit,
-      0
-    );
-
-
-  const totalLuas =
-    data.reduce(
-      (s,d) =>
-        s+d.luasPolygon,
-      0
-    );
-
-
-  const kec = {};
-  const companies = {};
-
-
-  data.forEach(d => {
-
-    if(!kec[d.kecamatan])
-      kec[d.kecamatan] = {
-        bibit:0,
-        luas:0
-      };
-
-
-    kec[d.kecamatan].bibit +=
-      d.bibit;
-
-
-    kec[d.kecamatan].luas +=
-      d.luasPolygon;
-
-
-    if(!companies[d.perusahaan])
-      companies[d.perusahaan] = 0;
-
-
-    companies[d.perusahaan] +=
-      d.bibit;
-
-  });
-
-
-  document.getElementById(
-    "provBibit"
-  ).textContent =
-    fmtJt(totalBibit);
-
-
-  document.getElementById(
-    "provLuas"
-  ).textContent =
-    fmtHa(totalLuas) +
-    " Ha";
-
-
-  document.getElementById(
-    "provKec"
-  ).textContent =
-    Object.keys(kec).length;
-
-
-  document.getElementById(
-    "provMitra"
-  ).textContent =
-    Object.keys(companies).length;
-
-
-  updateKecChart(kec);
-
-  updateKecTable(kec);
-
-  updateProvDonut(
-    companies,
-    totalBibit
-  );
-
-  updateProvTrend(data);
-
-  updateProvMap(data);
-
-}
-
-
-/* =========================================================
-KECAMATAN CHART
-========================================================= */
-
-function updateKecChart(kec){
-
-  const canvas =
-    document.getElementById(
-      "kecChart"
-    );
-
-
-  if(kecChartObj)
-    kecChartObj.destroy();
-
-
-  const sorted =
-    Object.entries(kec)
-      .sort(
-        (a,b) =>
-          b[1].bibit -
-          a[1].bibit
-      );
-
-
-  kecChartObj =
-    new Chart(
-      canvas.getContext("2d"),
-      {
-
-        type:"bar",
-
-        data:{
-
-          labels:
-            sorted.map(
-              ([n]) => n
-            ),
-
-          datasets:[{
-
-            data:
-              sorted.map(
-                ([,v]) =>
-                  v.bibit
-              ),
-
-            backgroundColor:
-              "#2fd6e8",
-
-            borderRadius:4
-
-          }]
-
-        },
-
-        options:{
-
-          indexAxis:"y",
-
-          responsive:true,
-
-          maintainAspectRatio:false,
-
-          plugins:{
-            legend:{
-              display:false
-            }
-          }
-
-        }
-
-      }
-    );
-
-}
-
-
-/* =========================================================
-KECAMATAN TABLE
-========================================================= */
-
-function updateKecTable(kec){
-
-  const tbody =
-    document.querySelector(
-      "#kecTable tbody"
-    );
-
-
-  tbody.innerHTML = "";
-
-
-  Object.entries(kec)
-
-    .sort(
-      (a,b) =>
-        b[1].bibit -
-        a[1].bibit
-    )
-
-    .forEach(
-      ([name,v]) => {
-
-        const tr =
-          document.createElement(
-            "tr"
-          );
-
-
-        tr.innerHTML = `
-
-          <td>${name}</td>
-
-          <td class="num">
-            ${fmtNum(v.bibit)}
-          </td>
-
-          <td class="num">
-            ${fmtHa(v.luas)}
-          </td>
-
-        `;
-
-
-        tbody.appendChild(
-          tr
-        );
-
-      }
-    );
-
-}
-
-
-/* =========================================================
-PROVINCE DONUT
-========================================================= */
-
-function updateProvDonut(
-  companies,
-  total
-){
-
-  const canvas =
-    document.getElementById(
-      "provDonut"
-    );
-
-
-  if(provDonutObj)
-    provDonutObj.destroy();
-
-
-  const sorted =
-    Object.entries(companies)
-      .sort(
-        (a,b) =>
-          b[1]-a[1]
-      );
-
-
-  provDonutObj =
-    new Chart(
-      canvas.getContext("2d"),
-      {
-
-        type:"doughnut",
-
-        data:{
-
-          labels:
-            sorted.map(
-              ([n]) => n
-            ),
-
-          datasets:[{
-
-            data:
-              sorted.map(
-                ([,v]) => v
-              ),
-
-            backgroundColor:[
-              "#4fd1a5",
-              "#2fd6e8",
-              "#e8c547",
-              "#f2994a",
-              "#d6409f",
-              "#8b5cf6"
-            ],
-
-            borderColor:
-              "#0e1f2b",
-
-            borderWidth:2
-
-          }]
-
-        },
-
-        options:{
-
-          responsive:true,
-
-          maintainAspectRatio:false,
-
-          cutout:"65%",
-
-          plugins:{
-            legend:{
-              position:"bottom"
-            }
-          }
-
-        }
-
-      }
-    );
-
-}
-
-
-/* =========================================================
-PROVINCE TREND
-========================================================= */
-
-function updateProvTrend(data){
-
-  const canvas =
-    document.getElementById(
-      "provTrendChart"
-    );
-
-
-  if(provTrendChartObj)
-    provTrendChartObj.destroy();
-
-
-  const values =
-    YEARS.map(
-      y =>
-        data
-          .filter(
-            d =>
-              Number(d.tahun) === y
-          )
-          .reduce(
-            (s,d) =>
-              s+d.bibit,
-            0
-          )
-    );
-
-
-  provTrendChartObj =
-    new Chart(
-      canvas.getContext("2d"),
-      {
-
-        type:"bar",
-
-        data:{
-
-          labels:YEARS,
-
-          datasets:[{
-
-            data:values,
-
-            backgroundColor:
-              "#4fd1a5",
-
-            borderRadius:5
-
-          }]
-
-        },
-
-        options:{
-
-          responsive:true,
-
-          maintainAspectRatio:false,
-
-          plugins:{
-            legend:{
-              display:false
-            }
-          }
-
-        }
-
-      }
-
-    );
-
-}
-
-
-/* =========================================================
-PROVINCE MAP
-========================================================= */
-
-function updateProvMap(data){
-
-  const valid =
-    data.filter(
-      d =>
-        Number.isFinite(d.lat) &&
-        Number.isFinite(d.lng)
-    );
-
-
-  if(!valid.length)
-    return;
-
-
-  if(!provMapObj){
-
-    provMapObj =
-      L.map(
-        "provMap"
-      );
-
-
-    addDarkBaseMap(provMapObj);
-
-  }
-
-
-  provMapObj.eachLayer(
-    layer => {
-
-      if(
-        !(layer instanceof L.TileLayer)
-      )
-        provMapObj.removeLayer(
-          layer
-        );
-
-    }
-  );
-
-
-  const bounds = [];
-
-
-  valid.forEach(d => {
-
-    L.circleMarker(
-      [d.lat,d.lng],
-      {
-        radius:7,
-        color:"#fff",
-        fillColor:"#4fd1a5",
-        fillOpacity:.9
-      }
-    )
-    .addTo(provMapObj)
-    .bindPopup(`
-      <b>${d.name}</b><br>
-      ${d.kabkota}<br>
-      ${d.kecamatan}<br>
-      ${fmtNum(d.bibit)} bibit
-    `);
-
-
-    bounds.push([
-      d.lat,
-      d.lng
-    ]);
-
-  });
-
-
-  provMapObj.fitBounds(
-    bounds,
-    {
-      padding:[30,30],
-      maxZoom:10
-    }
-  );
-
-
-  setTimeout(
-    () =>
-      provMapObj.invalidateSize(),
-    300
-  );
-
-}
-
-
-/* =========================================================
-COMPANY DETAIL
-========================================================= */
-
-function showCompDetailByName(
-  name
-){
-
-  const data =
-    plantingData.filter(
-      d =>
-        d.perusahaan === name
-    );
-
-
-  if(!data.length)
-    return;
-
-
-  hideAll();
-
-
-  document.getElementById(
-    "compDetailView"
-  ).style.display =
-    "block";
-
-
-  document.getElementById(
-    "breadcrumbComp"
-  ).textContent =
-    name;
-
-
-  document.getElementById(
-    "compTitle"
-  ).textContent =
-    "Detail Kontribusi Mitra " +
-    name;
-
-
-  const totalBibit =
-    data.reduce(
-      (s,d) =>
-        s+d.bibit,
-      0
-    );
-
-
-  const totalLuas =
-    data.reduce(
-      (s,d) =>
-        s+d.luasPolygon,
-      0
-    );
-
-
-  const provinces = {};
-
-
-  data.forEach(d => {
-
-    if(!provinces[d.provinsi])
-      provinces[d.provinsi] = 0;
-
-
-    provinces[d.provinsi] +=
-      d.bibit;
-
-  });
-
-
-  document.getElementById(
-    "compBibit"
-  ).textContent =
-    fmtJt(totalBibit);
-
-
-  document.getElementById(
-    "compLuas"
-  ).textContent =
-    fmtHa(totalLuas) +
-    " Ha";
-
-
-  document.getElementById(
-    "compProvCount"
-  ).textContent =
-    Object.keys(provinces).length;
-
-
-  const national =
-    plantingData.reduce(
-      (s,d) =>
-        s+d.bibit,
-      0
-    );
-
-
-  document.getElementById(
-    "compShare"
-  ).textContent =
-    national > 0
-      ? (
-          totalBibit /
-          national *
-          100
-        ).toFixed(1) + "%"
-      : "0%";
-
-
-  updateCompProvChart(provinces);
-
-  updateCompTable(provinces);
-
-  updateCompTrend(data);
-
-  updateCompMap(data);
-
-}
-
-
-/* =========================================================
-COMPANY PROVINCE CHART
-========================================================= */
-
-function updateCompProvChart(
-  provinces
-){
-
-  const canvas =
-    document.getElementById(
-      "compProvChart"
-    );
-
-
-  if(compProvChartObj)
-    compProvChartObj.destroy();
-
-
-  const sorted =
-    Object.entries(provinces)
-      .sort(
-        (a,b) =>
-          b[1]-a[1]
-      );
-
-
-  compProvChartObj =
-    new Chart(
-      canvas.getContext("2d"),
-      {
-
-        type:"bar",
-
-        data:{
-
-          labels:
-            sorted.map(
-              ([n]) => n
-            ),
-
-          datasets:[{
-
-            data:
-              sorted.map(
-                ([,v]) => v
-              ),
-
-            backgroundColor:
-              "#4fd1a5",
-
-            borderRadius:4
-
-          }]
-
-        },
-
-        options:{
-
-          indexAxis:"y",
-
-          responsive:true,
-
-          maintainAspectRatio:false,
-
-          plugins:{
-            legend:{
-              display:false
-            }
-          }
-
-        }
-
-      }
-
-    );
-
-}
-
-
-/* =========================================================
-COMPANY TABLE
-========================================================= */
-
-function updateCompTable(
-  provinces
-){
-
-  const tbody =
-    document.querySelector(
-      "#compProvTable tbody"
-    );
-
-
-  tbody.innerHTML = "";
-
-
-  Object.entries(provinces)
-
-    .sort(
-      (a,b) =>
-        b[1]-a[1]
-    )
-
-    .forEach(
-      ([prov,bibit]) => {
-
-        const tr =
-          document.createElement(
-            "tr"
-          );
-
-
-        tr.innerHTML = `
-
-          <td>
-            ${prov}
-          </td>
-
-          <td class="num">
-            ${fmtNum(bibit)}
-          </td>
-
-        `;
-
-
-        tr.onclick =
-          () =>
-            showProvDetailByName(
-              prov
-            );
-
-
-        tbody.appendChild(
-          tr
-        );
-
-      }
-    );
-
-}
-
-
-/* =========================================================
-COMPANY TREND
-========================================================= */
-
-function updateCompTrend(data){
-
-  const canvas =
-    document.getElementById(
-      "compTrendMini"
-    );
-
-
-  if(compTrendMiniObj)
-    compTrendMiniObj.destroy();
-
-
-  const values =
-    YEARS.map(
-      y =>
-        data
-          .filter(
-            d =>
-              Number(d.tahun) === y
-          )
-          .reduce(
-            (s,d) =>
-              s+d.bibit,
-            0
-          )
-    );
-
-
-  compTrendMiniObj =
-    new Chart(
-      canvas.getContext("2d"),
-      {
-
-        type:"line",
-
-        data:{
-
-          labels:YEARS,
-
-          datasets:[{
-
-            data:values,
-
-            borderColor:
-              "#4fd1a5",
-
-            backgroundColor:
-              "rgba(79,209,165,.15)",
-
-            fill:true,
-
-            tension:.35
-
-          }]
-
-        },
-
-        options:{
-
-          responsive:true,
-
-          maintainAspectRatio:false,
-
-          plugins:{
-            legend:{
-              display:false
-            }
-          }
-
-        }
-
-      }
-
-    );
-
-}
-
-
-/* =========================================================
-COMPANY MAP
-========================================================= */
-
-function updateCompMap(data){
-
-  if(!compMapObj){
-
-    compMapObj =
-      L.map(
-        "compMap"
-      );
-
-
-    addDarkBaseMap(compMapObj);
-
-  }
-
-
-  compMapObj.eachLayer(
-    layer => {
-
-      if(
-        !(layer instanceof L.TileLayer)
-      )
-        compMapObj.removeLayer(
-          layer
-        );
-
-    }
-  );
-
-
-  const bounds = [];
-
-
-  data.forEach(d => {
-
-    if(
-      !Number.isFinite(d.lat) ||
-      !Number.isFinite(d.lng)
-    )
-      return;
-
-
-    L.circleMarker(
-      [d.lat,d.lng],
-      {
-        radius:7,
-        color:"#fff",
-        fillColor:"#4fd1a5",
-        fillOpacity:.9
-      }
-    )
-    .addTo(compMapObj)
-    .bindPopup(`
-      <b>${d.name}</b><br>
-      Provinsi: ${d.provinsi}<br>
-      Kecamatan: ${d.kecamatan}<br>
-      Bibit: ${fmtNum(d.bibit)}<br>
-      Luas: ${fmtHa(d.luasPolygon)} Ha
-    `);
-
-
-    bounds.push([
-      d.lat,
-      d.lng
-    ]);
-
-  });
-
-
-  if(bounds.length){
-
-    compMapObj.fitBounds(
-      bounds,
-      {
-        padding:[40,40],
-        maxZoom:10
-      }
-    );
-
-  }
-
-
-  setTimeout(
-    () =>
-      compMapObj.invalidateSize(),
-    300
-  );
-
-}
-
-
-/* =========================================================
-VIEW CONTROL
-========================================================= */
-
-function hideAll(){
-
-  document.getElementById(
-    "mainView"
-  ).style.display =
-    "none";
-
-
-  document.getElementById(
-    "provDetailView"
-  ).style.display =
-    "none";
-
-
-  document.getElementById(
-    "compDetailView"
-  ).style.display =
-    "none";
-
-}
-
-
-function showMain(){
-
-  hideAll();
-
-
-  document.getElementById(
-    "mainView"
-  ).style.display =
-    "block";
-
-
-  setTimeout(
-    () => {
-
-      if(mainMap)
-        mainMap.invalidateSize();
-
-    },
-    300
-  );
-
-}
-
-
-/* =========================================================
-GOOGLE DRIVE PHOTO - AUTO DISPLAY
-========================================================= */
-
-function getDriveFileId(url){
-
-  if(!url)
-    return null;
-
-  url = String(url).trim();
-
-  /*
-    Format:
-    https://drive.google.com/file/d/FILE_ID/view
-  */
-
-  let match =
-    url.match(
-      /drive\.google\.com\/file\/d\/([^\/?#]+)/
-    );
-
-  if(match)
-    return match[1];
-
-
-  /*
-    Format:
-    https://drive.google.com/open?id=FILE_ID
-  */
-
-  match =
-    url.match(
-      /drive\.google\.com\/open\?id=([^&#]+)/
-    );
-
-  if(match)
-    return match[1];
-
-
-  /*
-    Format:
-    https://drive.google.com/uc?id=FILE_ID
-  */
-
-  match =
-    url.match(
-      /drive\.google\.com\/uc\?(?:[^#]*&)?id=([^&#]+)/
-    );
-
-  if(match)
-    return match[1];
-
-
-  return null;
-
-}
-
-
-/* =========================================================
-PHOTO HTML
-========================================================= */
-
-function getPhotoHtml(photoUrl){
-
-  if(!photoUrl)
-    return "";
-
-
-  const originalUrl =
-    String(photoUrl).trim();
-
-
-  const fileId =
-    getDriveFileId(
-      originalUrl
-    );
-
-
-  /*
-    GOOGLE DRIVE
-  */
-
-  if(fileId){
-
-    const imageUrl =
-      "https://drive.google.com/uc?export=view&id=" +
-      encodeURIComponent(fileId);
-
-
-    return `
-
-      <div
-        style="
-          margin-top:12px;
-          text-align:center;
-        "
-      >
-
-        <a
-          href="${originalUrl}"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-
-          <img
-            src="${imageUrl}"
-            alt="Foto lokasi penanaman"
-            style="
-              width:100%;
-              max-width:280px;
-              max-height:220px;
-              object-fit:cover;
-              border-radius:8px;
-              border:1px solid #254553;
-              display:block;
-              margin:auto;
-              cursor:pointer;
-            "
-            onerror="
-              this.style.display='none';
-              this.nextElementSibling.style.display='block';
-            "
-          >
-
-          <div
-            style="
-              display:none;
-              padding:12px;
-              background:#10222e;
-              border-radius:8px;
-              color:#4fd1a5;
-              font-size:12px;
-            "
-          >
-
-            📷 Foto tidak dapat ditampilkan.<br>
-            Klik di sini untuk membuka foto.
-
-          </div>
-
-        </a>
-
-        <div
-          style="
-            margin-top:6px;
-            font-size:10px;
-            color:#7c94a3;
-          "
-        >
-
-          Klik foto untuk membuka Google Drive
+    <!-- NAVBAR / HEADER -->
+    <header class="glass-panel header">
+        <div class="header-brand">
+            <div class="brand-icon">
+                <i data-lucide="waves" class="w-6 h-6"></i>
+            </div>
+            <div>
+                <div class="brand-title">IBEQ Ocean & Marine Dashboard</div>
+                <div class="brand-sub">Monitoring Realisasi Penanaman Mangrove Nasional</div>
+            </div>
+        </div>
+
+        <div class="header-controls">
+            <button class="nav-btn"><i data-lucide="home" style="width:14px"></i> Home</button>
+            <div class="time-badge" id="lastUpdate">Memuat data...</div>
+            <button class="export-btn"><i data-lucide="share-2" style="width:14px"></i> Share / Export</button>
+        </div>
+    </header>
+
+    <!-- TOP SECTION: GAUGE CHART + YEARLY TREND & MAP -->
+    <section class="top-section">
+        <!-- LEFT PANEL: GAUGE CHART + LINE CHART TREN -->
+        <div class="glass-panel chart-card">
+            <div>
+                <div class="card-header-text">Capaian Target Penanaman</div>
+                <div class="card-sub-text">Target Nasional: 2 Miliar Pohon</div>
+                
+                <div class="gauge-container">
+                    <canvas id="gaugeChart"></canvas>
+                    <div class="gauge-center-text">
+                        <div class="gauge-pct" id="gaugePctValue">0%</div>
+                        <div class="gauge-label">Capaian Target</div>
+                    </div>
+                </div>
+
+                <div class="gauge-ticks">
+                    <span>0 Miliar</span>
+                    <span>2 Miliar</span>
+                </div>
+            </div>
+            
+            <!-- SECTION TREN PENANAMAN PER TAHUN -->
+            <div class="trend-box">
+                <div class="trend-title">
+                    <i data-lucide="trending-up" style="width:14px; color:#00e5ff;"></i>
+                    Tren Penanaman per Tahun
+                </div>
+                <div class="trend-chart-container">
+                    <canvas id="yearlyTrendChart"></canvas>
+                </div>
+            </div>
+            
+            <div style="font-size: 10px; color: #94a3b8; text-align: center; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 8px; line-height: 1.4;">
+                Total Realisasi: <b id="targetCurrent" style="color: #00e5ff;">0</b> Pohon
+                <div style="font-size: 9px; color: #64748b; margin-top: 2px;">
+                    Persentase merupakan realisasi & kontribusi penanaman mangrove terhadap target nasional penanaman pohon.
+                </div>
+            </div>
+        </div>
+
+        <!-- RIGHT PANEL: INTERACTIVE MAP WITH FLOATING LAYER MANAGEMENT -->
+        <div class="glass-panel map-card">
+            <!-- Map Overlay Controls Left -->
+            <div class="map-overlay-top">
+                <!-- CUSTOM DROPDOWN PROVINSI DENGAN SEARCH BAR -->
+                <div class="custom-dropdown-container">
+                    <button class="dropdown-btn" id="provDropdownBtn" onclick="toggleProvDropdown()">
+                        <span id="selectedProvText">Semua Provinsi</span>
+                        <i data-lucide="chevron-down" style="width:14px;"></i>
+                    </button>
+                    <div class="dropdown-menu" id="provDropdownMenu">
+                        <input type="text" class="search-input" id="provSearchInput" placeholder="Cari provinsi..." oninput="filterProvinceList()">
+                        <div class="dropdown-list" id="provDropdownList"></div>
+                    </div>
+                </div>
+
+                <select id="filterTahun" class="select-custom">
+                    <option value="All">Semua Tahun</option>
+                </select>
+            </div>
+
+            <!-- FLOATING LAYER MANAGEMENT (KANAN ATAS MAP) -->
+            <div class="layer-control-floating">
+                <!-- Tombol Open Layer Panel -->
+                <button class="floating-icon-btn" onclick="toggleLayerModal()" title="Layer Management">
+                    <i data-lucide="layers" style="width:20px; height:20px;"></i>
+                </button>
+
+                <!-- Tombol Switch Basemap (Dark vs Satellite) -->
+                <button class="floating-icon-btn" onclick="toggleBasemapStyle()" title="Ganti Mode Peta (Satellite/Dark)">
+                    <i data-lucide="grid" style="width:20px; height:20px;"></i>
+                </button>
+
+                <!-- Layer Management Popup Box -->
+                <div class="layer-modal-box" id="layerModalBox">
+                    <div class="layer-modal-header">
+                        <span>Layer Management</span>
+                        <i data-lucide="x" style="width:14px; cursor:pointer;" onclick="toggleLayerModal()"></i>
+                    </div>
+
+                    <div class="layer-section-title" onclick="toggleFilterAccordion()">
+                        <span>Filter & Layers</span>
+                        <i data-lucide="chevron-up" id="accIcon" style="width:14px;"></i>
+                    </div>
+
+                    <div id="filterAccordionContent">
+                        <!-- Group 1: Titik Penanaman -->
+                        <div class="layer-group">
+                            <label class="layer-item">
+                                <div class="layer-item-left">
+                                    <span style="width:10px; height:10px; border-radius:50%; background:#00e5ff; display:inline-block; border:1px solid #fff;"></span>
+                                    <span>Titik Penanaman Realisasi</span>
+                                </div>
+                                <input type="checkbox" id="checkMarkers" checked onchange="toggleMarkersVisibility()">
+                            </label>
+                        </div>
+
+                        <!-- Group 2: Klasifikasi Mangrove Polygon -->
+                        <div class="layer-group">
+                            <div style="font-size:10px; color:#94a3b8; margin-bottom:4px; font-weight:600;">Klasifikasi Mangrove:</div>
+                            
+                            <label class="layer-item">
+                                <div class="layer-item-left">
+                                    <span style="width:10px; height:10px; border-radius:2px; background:#6A1B9A; display:inline-block;"></span>
+                                    <span>Lebat</span>
+                                </div>
+                                <input type="checkbox" id="checkLebat" checked>
+                            </label>
+
+                            <label class="layer-item">
+                                <div class="layer-item-left">
+                                    <span style="width:10px; height:10px; border-radius:2px; background:#F57C00; display:inline-block;"></span>
+                                    <span>Sedang</span>
+                                </div>
+                                <input type="checkbox" id="checkSedang" checked>
+                            </label>
+
+                            <label class="layer-item">
+                                <div class="layer-item-left">
+                                    <span style="width:10px; height:10px; border-radius:2px; background:#1976D2; display:inline-block;"></span>
+                                    <span>Jarang</span>
+                                </div>
+                                <input type="checkbox" id="checkJarang" checked>
+                            </label>
+                        </div>
+
+                        <div id="polygonStatus" style="font-size:10px; color:#00e5ff; margin-bottom:6px; text-align:center;"></div>
+                        <button class="btn-hide-all" id="btnToggleAllLayers" onclick="toggleAllLayers()">Hide All Layers</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Map Container -->
+            <div id="mainMap"></div>
+        </div>
+    </section>
+
+    <!-- BOTTOM METRICS & RANKING PANEL -->
+    <section class="glass-panel bottom-section">
+        
+        <!-- Title Left Box -->
+        <div class="metric-title-box">
+            <h3>Hasil<br>Monitoring<br>Realisasi<br>Penanaman<br>Mangrove</h3>
+        </div>
+
+        <!-- Horizontal Scroll Container Rate Cards -->
+        <div class="metrics-scroll-container">
+            
+            <!-- Kolom 1: Total Bibit Tertanam -->
+            <div class="stat-card">
+                <div class="card-top-icon">
+                    <i data-lucide="trees" style="width:14px; color:#00e5ff;"></i>
+                    <span>Total Bibit Tertanam</span>
+                </div>
+                <div class="stat-value-tall" id="kpiBibit">0</div>
+                <div class="stat-sub-info">
+                    <span>Terealisasi: <strong id="subRealBibit">0</strong></span>
+                </div>
+            </div>
+
+            <!-- Kolom 2: Luas Tertanam -->
+            <div class="stat-card">
+                <div class="card-top-icon">
+                    <i data-lucide="map" style="width:14px; color:#00e5ff;"></i>
+                    <span>Luas Tertanam</span>
+                </div>
+                <div class="stat-value-tall" id="kpiLuas">0 <span class="unit">Ha</span></div>
+                <div class="stat-sub-info">
+                    <span>Total Area Lokasi</span>
+                </div>
+            </div>
+
+            <!-- Kolom 3: Provinsi Tertanam -->
+            <div class="stat-card">
+                <div class="card-top-icon">
+                    <i data-lucide="building-2" style="width:14px; color:#38bdf8;"></i>
+                    <span>Provinsi Tertanam</span>
+                </div>
+                <div class="stat-value-tall" style="color:#38bdf8" id="statProv">0</div>
+                <div class="stat-sub-info">
+                    <span>Sebaran Wilayah</span>
+                </div>
+            </div>
+
+            <!-- Kolom 4: Sumber Dana / Mitra -->
+            <div class="stat-card">
+                <div class="card-top-icon">
+                    <i data-lucide="users" style="width:14px; color:#a855f7;"></i>
+                    <span>Sumber Dana / Mitra</span>
+                </div>
+                <div class="stat-value-tall" style="color:#a855f7" id="statComp">0</div>
+                <div class="stat-sub-info">
+                    <span>Mitra Terlibat</span>
+                </div>
+            </div>
+
+            <!-- Kolom 5: Status Kegiatan Dalam Perencanaan -->
+            <div class="stat-card">
+                <div class="card-top-icon">
+                    <i data-lucide="activity" style="width:14px; color:#f59e0b;"></i>
+                    <span>Status Kegiatan</span>
+                </div>
+                <div class="stat-value-tall" style="color:#f59e0b" id="statRencana">0</div>
+                <div class="stat-sub-info">
+                    <span>Dalam Perencanaan</span>
+                </div>
+            </div>
 
         </div>
 
-      </div>
+        <!-- Right Table: Lokasi dengan Penanaman Terbanyak -->
+        <div class="table-card">
+            <div class="table-title">3 Lokasi dengan Penanaman Terbanyak</div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>No</th>
+                        <th>Lokasi / Provinsi</th>
+                        <th class="num">Jumlah Bibit</th>
+                    </tr>
+                </thead>
+                <tbody id="top3Tbody">
+                    <tr><td colspan="3">Memuat data...</td></tr>
+                </tbody>
+            </table>
+        </div>
 
-    `;
+    </section>
 
-  }
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        lucide.createIcons();
 
+        const SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTLlhT3kN4L2qe9rC9rqpySDMDEYVRD2kM-vejjaMwhdcXVaG9-1EBdDMVwvPfv_WmXT8U_FD8FvxFE/pub?output=csv";
+        const TARGET_NASIONAL = 2000000000; // 2 Miliar Pohon
 
-  /*
-    URL FOTO BIASA
-  */
+        const PROVINCE_FILES = {
+            ACEH:"Aceh", BALI:"Bali", BANTEN:"Banten", BENGKULU:"Bengkulu",
+            DAERAH_ISTIMEWA_YOGYAKARTA:"Daerah Istimewa Yogyakarta", DAERAH_KHUSUS_JAKARTA:"Daerah Khusus Jakarta",
+            GORONTALO:"Gorontalo", JAMBI:"Jambi", JAWA_BARAT:"Jawa Barat", JAWA_TENGAH:"Jawa Tengah",
+            JAWA_TIMUR:"Jawa Timur", KALIMANTAN_BARAT:"Kalimantan Barat", KALIMANTAN_SELATAN:"Kalimantan Selatan",
+            KALIMANTAN_TENGAH:"Kalimantan Tengah", KALIMANTAN_TIMUR:"Kalimantan Timur", KALIMANTAN_UTARA:"Kalimantan Utara",
+            KEPULAUAN_BANGKA_BELITUNG:"Kepulauan Bangka Belitung", KEPULAUAN_RIAU:"Kepulauan Riau", LAMPUNG:"Lampung",
+            MALUKU:"Maluku", MALUKU_UTARA:"Maluku Utara", NUSA_TENGGARA_BARAT:"Nusa Tenggara Barat", NUSA_TENGGARA_TIMUR:"Nusa Tenggara Timur",
+            PAPUA:"Papua", PAPUA_BARAT:"Papua Barat", PAPUA_BARAT_DAYA:"Papua Barat Daya", PAPUA_SELATAN:"Papua Selatan",
+            PAPUA_TENGAH:"Papua Tengah", RIAU:"Riau", SULAWESI_BARAT:"Sulawesi Barat", SULAWESI_SELATAN:"Sulawesi Selatan",
+            SULAWESI_TENGAH:"Sulawesi Tengah", SULAWESI_TENGGARA:"Sulawesi Tenggara", SULAWESI_UTARA:"Sulawesi Utara",
+            SUMATERA_BARAT:"Sumatera Barat", SUMATERA_SELATAN:"Sumatera Selatan", SUMATERA_UTARA:"Sumatera Utara"
+        };
 
-  return `
+        const MANGROVE_BASE_URL = "https://cdn.jsdelivr.net/gh/sintaergunap-hue/Dashboard-Penanaman-Mangrove-Nasional@main/";
 
-    <div
-      style="
-        margin-top:12px;
-        text-align:center;
-      "
-    >
+        let plantingData = [];
+        let mainMap = null;
+        let markersLayer = null;
+        let darkLayer = null, satelliteLayer = null;
+        let isSatellite = false;
+        let allLayersHidden = false;
 
-      <a
-        href="${originalUrl}"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
+        let polygonLebat = null, polygonSedang = null, polygonJarang = null;
+        let loadedPolygonProvince = null;
+        let selectedProvCode = "All";
 
-        <img
-          src="${originalUrl}"
-          alt="Foto lokasi penanaman"
-          style="
-            width:100%;
-            max-width:280px;
-            max-height:220px;
-            object-fit:cover;
-            border-radius:8px;
-            border:1px solid #254553;
-            display:block;
-            margin:auto;
-            cursor:pointer;
-          "
-        >
+        let gaugeChartObj = null;
+        let yearlyTrendChartObj = null;
 
-      </a>
-
-    </div>
-
-  `;
-
-}
-
-
-/* =========================================================
-MAIN MARKERS
-VERSI DENGAN FOTO GOOGLE DRIVE
-========================================================= */
-
-function updateMainMarkers(data){
-
-  if(!markersLayer)
-    return;
-
-
-  markersLayer.clearLayers();
-
-
-  data.forEach(d => {
-
-    if(
-      !Number.isFinite(d.lat) ||
-      !Number.isFinite(d.lng)
-    )
-      return;
-
-
-    const marker =
-      L.circleMarker(
-        [d.lat,d.lng],
-        {
-          radius:7,
-          color:"#fff",
-          weight:1,
-          fillColor:"#4fd1a5",
-          fillOpacity:.9
+        // Formatter Functions
+        function fmtNum(n) { return Math.round(Number(n) || 0).toLocaleString("id-ID"); }
+        function fmtHa(n) { return Number(n || 0).toLocaleString("id-ID", {minimumFractionDigits:2, maximumFractionDigits:2}); }
+        function fmtJt(n) {
+            n = Number(n) || 0;
+            if(n >= 1000000) return (n / 1000000).toLocaleString("id-ID", {minimumFractionDigits:1, maximumFractionDigits:2}) + " Jt";
+            return fmtNum(n);
         }
-      );
 
+        // CSV Parser
+        function parseCSV(text) {
+            const rows = [];
+            let row = [], cell = "", insideQuotes = false;
+            for(let i=0; i<text.length; i++){
+                const char = text[i], next = text[i+1];
+                if(char === '"' && insideQuotes && next === '"') { cell += '"'; i++; continue; }
+                if(char === '"') { insideQuotes = !insideQuotes; continue; }
+                if(char === "," && !insideQuotes) { row.push(cell); cell = ""; continue; }
+                if((char === "\n" || char === "\r") && !insideQuotes) {
+                    if(char === "\r" && next === "\n") i++;
+                    row.push(cell); rows.push(row); row = []; cell = ""; continue;
+                }
+                cell += char;
+            }
+            if(cell.length || row.length) { row.push(cell); rows.push(row); }
+            if(!rows.length) return [];
+            const headers = rows[0].map(h => h.trim());
+            return rows.slice(1).filter(r => r.some(v => String(v).trim() !== "")).map(r => {
+                const obj = {};
+                headers.forEach((h,i) => { obj[h] = r[i] !== undefined ? String(r[i]).trim() : ""; });
+                return obj;
+            });
+        }
 
-    marker.addTo(
-      markersLayer
-    );
+        function normalizeData(raw) {
+            return raw.map((r, index) => ({
+                objectid: Number(r.OBJECTID) || index + 1,
+                name: r.Name || `Lokasi ${index+1}`,
+                provinsi: r.Provinsi || "Tidak diketahui",
+                kabkota: r.KabKota || "", 
+                kecamatan: r.Kecamatan || "", 
+                desa: r.Desa || "-",
+                bibit: Number(String(r.Jumlah_Bib || "0").replace(/[^\d.-]/g, "")) || 0,
+                jenis: r.Jenis || r.Jenis_Bibit || "-",
+                luasPolygon: Number(String(r.Luas_Polyg || r.Luas_Lahan || "0").replace(",", ".")) || 0,
+                perusahaan: r.Sumber_Dana || r.Perusahaan || "Tidak diketahui",
+                statusKegiatan: r.Status_Kegiatan || "Terealisasi",
+                tahun: Number(r.Tahun) || null,
+                foto: r.Foto || "",
+                lat: Number(String(r.Lat || "").replace(",", ".")),
+                lng: Number(String(r.Long || "").replace(",", ".")),
+                lastUpdate: r.Last_Update || ""
+            }));
+        }
 
+        async function loadSpreadsheet() {
+            try {
+                const response = await fetch(SHEET_URL + "&cache=" + Date.now());
+                if(!response.ok) throw new Error("Gagal mengambil spreadsheet");
+                const csvText = await response.text();
+                plantingData = normalizeData(parseCSV(csvText));
 
-    marker.bindPopup(`
+                updateLastUpdate();
+                populateFilters();
+                initMainMap();
+                updateDashboard();
+            } catch(e) {
+                console.error(e);
+                alert("Gagal memuat data spreadsheet.");
+            }
+        }
 
-      <div class="popup-title">
-        ${d.name}
-      </div>
+        function updateLastUpdate() {
+            const dates = plantingData.map(d => d.lastUpdate).filter(Boolean);
+            const el = document.getElementById("lastUpdate");
+            if(el) el.textContent = dates.length ? "Update: " + dates.sort((a,b) => new Date(b) - new Date(a))[0] : "Update: Belum tersedia";
+        }
 
+        /* LOGIC FLOATING LAYER MANAGEMENT */
+        function toggleLayerModal() {
+            document.getElementById("layerModalBox").classList.toggle("show");
+        }
 
-      <div class="popup-row">
-        Provinsi:
-        <b>${d.provinsi}</b>
-      </div>
+        function toggleFilterAccordion() {
+            const content = document.getElementById("filterAccordionContent");
+            const icon = document.getElementById("accIcon");
+            if(content.style.display === "none") {
+                content.style.display = "block";
+                icon.setAttribute("data-lucide", "chevron-up");
+            } else {
+                content.style.display = "none";
+                icon.setAttribute("data-lucide", "chevron-down");
+            }
+            lucide.createIcons();
+        }
 
+        function toggleMarkersVisibility() {
+            const show = document.getElementById("checkMarkers").checked;
+            if(show) {
+                if(!mainMap.hasLayer(markersLayer)) mainMap.addLayer(markersLayer);
+            } else {
+                if(mainMap.hasLayer(markersLayer)) mainMap.removeLayer(markersLayer);
+            }
+        }
 
-      <div class="popup-row">
-        Kabupaten/Kota:
-        <b>${d.kabkota}</b>
-      </div>
+        function toggleAllLayers() {
+            allLayersHidden = !allLayersHidden;
+            const btn = document.getElementById("btnToggleAllLayers");
+            const targetState = !allLayersHidden;
 
+            document.getElementById("checkMarkers").checked = targetState;
+            document.getElementById("checkLebat").checked = targetState;
+            document.getElementById("checkSedang").checked = targetState;
+            document.getElementById("checkJarang").checked = targetState;
 
-      <div class="popup-row">
-        Kecamatan:
-        <b>${d.kecamatan}</b>
-      </div>
+            toggleMarkersVisibility();
+            updatePolygonVisibility();
 
+            btn.textContent = allLayersHidden ? "Show All Layers" : "Hide All Layers";
+        }
 
-      <div class="popup-row">
-        Desa:
-        <b>${d.desa}</b>
-      </div>
+        /* LOGIC DROPDOWN PROVINSI */
+        function toggleProvDropdown() {
+            document.getElementById("provDropdownMenu").classList.toggle("show");
+        }
 
+        document.addEventListener("click", function(e) {
+            const container = document.querySelector(".custom-dropdown-container");
+            const layerWidget = document.querySelector(".layer-control-floating");
+            
+            if(container && !container.contains(e.target)) {
+                document.getElementById("provDropdownMenu").classList.remove("show");
+            }
+            if(layerWidget && !layerWidget.contains(e.target)) {
+                document.getElementById("layerModalBox").classList.remove("show");
+            }
+        });
 
-      <div class="popup-row">
-        Bibit:
-        <b>${fmtNum(d.bibit)}</b>
-      </div>
+        function filterProvinceList() {
+            const input = document.getElementById("provSearchInput").value.toLowerCase();
+            const items = document.querySelectorAll(".dropdown-item");
+            items.forEach(item => {
+                const text = item.textContent.toLowerCase();
+                item.style.display = text.includes(input) ? "block" : "none";
+            });
+        }
 
+        function selectProvince(code, name) {
+            selectedProvCode = code;
+            document.getElementById("selectedProvText").textContent = name;
+            document.getElementById("provDropdownMenu").classList.remove("show");
 
-      <div class="popup-row">
-        Luas:
-        <b>${fmtHa(d.luasPolygon)} Ha</b>
-      </div>
+            document.querySelectorAll(".dropdown-item").forEach(el => {
+                el.classList.toggle("active", el.dataset.code === code);
+            });
 
+            updateDashboard();
 
-      <div class="popup-row">
-        Perusahaan:
-        <b>${d.perusahaan}</b>
-      </div>
+            if(code !== "All") {
+                loadMangrovePolygon(code);
+                zoomToProvince(name);
+            } else {
+                clearMangrovePolygon();
+                mainMap.setView([-2.5, 118], 5);
+            }
+        }
 
+        function populateFilters() {
+            const provList = document.getElementById("provDropdownList");
+            provList.innerHTML = `<div class="dropdown-item active" data-code="All" onclick="selectProvince('All', 'Semua Provinsi')">Semua Provinsi</div>`;
 
-      <div class="popup-row">
-        Tahun:
-        <b>${d.tahun || "-"}</b>
-      </div>
+            Object.entries(PROVINCE_FILES).sort((a,b) => a[1].localeCompare(b[1])).forEach(([code, name]) => {
+                const item = document.createElement("div");
+                item.className = "dropdown-item";
+                item.dataset.code = code;
+                item.textContent = name;
+                item.onclick = () => selectProvince(code, name);
+                provList.appendChild(item);
+            });
 
+            const yearSelect = document.getElementById("filterTahun");
+            yearSelect.innerHTML = '<option value="All">Semua Tahun</option>';
+            const years = [...new Set(plantingData.map(d => d.tahun).filter(Boolean))].sort((a,b) => a-b);
+            years.forEach(y => {
+                const opt = document.createElement("option");
+                opt.value = y; opt.textContent = y;
+                yearSelect.appendChild(opt);
+            });
+            yearSelect.onchange = updateDashboard;
+        }
 
-      <!-- FOTO OTOMATIS DARI GOOGLE DRIVE -->
+        function zoomToProvince(provName) {
+            const provPoints = plantingData.filter(d => d.provinsi === provName && Number.isFinite(d.lat) && Number.isFinite(d.lng));
+            if(provPoints.length > 0) {
+                const bounds = L.latLngBounds(provPoints.map(p => [p.lat, p.lng]));
+                mainMap.fitBounds(bounds, { padding: [50, 50], maxZoom: 10 });
+            }
+        }
 
-      ${getPhotoHtml(d.foto)}
+        function getFilteredData() {
+            const provName = PROVINCE_FILES[selectedProvCode];
+            const tahun = document.getElementById("filterTahun").value;
 
+            return plantingData.filter(d => {
+                const matchProv = (selectedProvCode === "All") || (d.provinsi === provName);
+                const matchYear = (tahun === "All") || (String(d.tahun) === String(tahun));
+                return matchProv && matchYear;
+            });
+        }
 
-      <div
-        style="
-          margin-top:8px;
-          color:#158a70;
-          cursor:pointer;
-        "
-        onclick="
-          showProvDetailByName(
-            '${String(d.provinsi).replace(/'/g,"\\'")}'
-          )
-        "
-      >
+        function updateDashboard() {
+            const data = getFilteredData();
 
-        Lihat Detail Provinsi →
+            const totalBibit = data.reduce((s,d) => s + d.bibit, 0);
+            const totalLuas = data.reduce((s,d) => s + d.luasPolygon, 0);
 
-      </div>
+            const countReal = data.filter(d => d.statusKegiatan === "Terealisasi").reduce((s,d) => s + d.bibit, 0);
+            const countRencana = data.filter(d => d.statusKegiatan === "Dalam Perencanaan").length;
 
-    `);
+            const provinces = {}, companies = {};
+            data.forEach(d => {
+                if(!provinces[d.provinsi]) provinces[d.provinsi] = { bibit: 0, luas: 0 };
+                provinces[d.provinsi].bibit += d.bibit;
+                provinces[d.provinsi].luas += d.luasPolygon;
 
-  });
+                if(!companies[d.perusahaan]) companies[d.perusahaan] = 0;
+                companies[d.perusahaan] += d.bibit;
+            });
 
-}
+            document.getElementById("kpiBibit").textContent = fmtJt(totalBibit);
+            document.getElementById("kpiLuas").innerHTML = `${fmtHa(totalLuas)} <span class="unit">Ha</span>`;
+            document.getElementById("statProv").textContent = Object.keys(provinces).length;
+            document.getElementById("statComp").textContent = Object.keys(companies).length;
+            document.getElementById("statRencana").textContent = `${countRencana} Lokasi`;
 
+            document.getElementById("subRealBibit").textContent = fmtJt(countReal);
+            document.getElementById("targetCurrent").textContent = fmtNum(totalBibit);
+            
+            // Persentase Kontribusi
+            const pct = ((totalBibit / TARGET_NASIONAL) * 100).toFixed(2);
+            document.getElementById("gaugePctValue").textContent = `${pct}%`;
 
-/* =========================================================
-START
-========================================================= */
+            renderGaugeChart(totalBibit);
+            renderYearlyTrendChart(data);
+            renderTop3Table(provinces);
+            updateMapMarkers(data);
+        }
 
-loadSpreadsheet();
+        function renderGaugeChart(totalBibit) {
+            const ctx = document.getElementById("gaugeChart").getContext("2d");
+            if(gaugeChartObj) gaugeChartObj.destroy();
 
-</script>
+            const remaining = Math.max(0, TARGET_NASIONAL - totalBibit);
 
+            gaugeChartObj = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Realisasi Mangrove', 'Sisa Target Pohon'],
+                    datasets: [{
+                        data: [totalBibit, remaining],
+                        backgroundColor: ['#00e5ff', 'rgba(255, 255, 255, 0.1)'],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    circumference: 180,
+                    rotation: 270,
+                    cutout: '75%',
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return ' ' + context.label + ': ' + fmtNum(context.raw) + ' Pohon';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        /* FUNCTION LINE CHART TREN PENANAMAN PER TAHUN */
+        function renderYearlyTrendChart(data) {
+            const ctx = document.getElementById("yearlyTrendChart").getContext("2d");
+            if(yearlyTrendChartObj) yearlyTrendChartObj.destroy();
+
+            const yearlyTotals = {};
+            data.forEach(d => {
+                if(d.tahun) {
+                    yearlyTotals[d.tahun] = (yearlyTotals[d.tahun] || 0) + d.bibit;
+                }
+            });
+
+            const years = Object.keys(yearlyTotals).sort((a,b) => a - b);
+            const totals = years.map(y => yearlyTotals[y]);
+
+            yearlyTrendChartObj = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: years.length ? years : ['-'],
+                    datasets: [{
+                        label: 'Bibit',
+                        data: totals.length ? totals : [0],
+                        borderColor: '#00e5ff',
+                        backgroundColor: 'rgba(0, 229, 255, 0.12)',
+                        borderWidth: 2,
+                        fill: true,
+                        tension: 0.3,
+                        pointRadius: 3,
+                        pointBackgroundColor: '#00e5ff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return ' ' + fmtNum(context.raw) + ' Bibit';
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            ticks: { color: '#94a3b8', font: { size: 9 } },
+                            grid: { display: false }
+                        },
+                        y: {
+                            ticks: { 
+                                color: '#64748b', 
+                                font: { size: 9 },
+                                callback: function(val) { return fmtJt(val); }
+                            },
+                            grid: { color: 'rgba(255, 255, 255, 0.05)' }
+                        }
+                    }
+                }
+            });
+        }
+
+        function renderTop3Table(provinces) {
+            const tbody = document.getElementById("top3Tbody");
+            tbody.innerHTML = "";
+            const sorted = Object.entries(provinces).sort((a,b) => b[1].bibit - a[1].bibit).slice(0, 3);
+            sorted.forEach(([name, val], idx) => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td>${idx + 1}</td>
+                        <td style="color:#00e5ff; font-weight:500;">${name}</td>
+                        <td class="num">${fmtJt(val.bibit)}</td>
+                    </tr>
+                `;
+            });
+        }
+
+        /* BASEMAP INIT & TOGGLE STYLE */
+        function initMainMap() {
+            if(mainMap) return;
+            mainMap = L.map("mainMap", { zoomControl: false }).setView([-2.5, 118], 5);
+            
+            darkLayer = L.layerGroup([
+                L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}', { attribution: 'Tiles &copy; Esri', maxZoom: 16 }),
+                L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Reference/MapServer/tile/{z}/{y}/{x}', { maxZoom: 16 })
+            ]);
+
+            satelliteLayer = L.layerGroup([
+                L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', { attribution: 'Tiles &copy; Esri', maxZoom: 18 }),
+                L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}', { maxZoom: 18 })
+            ]);
+
+            darkLayer.addTo(mainMap);
+
+            // BUAT CUSTOM PANE AGAR MARKER SELALU BERADA DI ATAS POLYGON
+            mainMap.createPane('markerPane');
+            mainMap.getPane('markerPane').style.zIndex = 650;
+
+            markersLayer = L.layerGroup().addTo(mainMap);
+        }
+
+        function toggleBasemapStyle() {
+            if(isSatellite) {
+                mainMap.removeLayer(satelliteLayer);
+                darkLayer.addTo(mainMap);
+                isSatellite = false;
+            } else {
+                mainMap.removeLayer(darkLayer);
+                satelliteLayer.addTo(mainMap);
+                isSatellite = true;
+            }
+        }
+
+        function getDriveFileId(url) {
+            if(!url) return null;
+            let match = url.match(/drive\.google\.com\/file\/d\/([^\/?#]+)/) ||
+                        url.match(/drive\.google\.com\/open\?id=([^&#]+)/) ||
+                        url.match(/drive\.google\.com\/uc\?(?:[^#]*&)?id=([^&#]+)/);
+            return match ? match[1] : null;
+        }
+
+        function getPhotoHtml(url) {
+            if(!url) return "";
+            const fileId = getDriveFileId(url);
+            const imgUrl = fileId ? `https://drive.google.com/uc?export=view&id=${fileId}` : url;
+            return `<div style="margin-top:8px;"><img src="${imgUrl}" style="width:100%; max-height:120px; object-fit:cover; border-radius:6px;" onerror="this.style.display='none'"></div>`;
+        }
+
+        function updateMapMarkers(data) {
+            if(!markersLayer) return;
+            markersLayer.clearLayers();
+            data.forEach(d => {
+                if(!Number.isFinite(d.lat) || !Number.isFinite(d.lng)) return;
+                
+                const marker = L.circleMarker([d.lat, d.lng], {
+                    pane: 'markerPane',
+                    radius: 6, 
+                    color: "#ffffff", 
+                    weight: 1.5, 
+                    fillColor: "#00e5ff", 
+                    fillOpacity: 0.9
+                });
+
+                marker.bindPopup(`
+                    <div style="font-weight:bold; color:#00e5ff; font-size:12px; margin-bottom:6px; border-bottom:1px solid #00e5ff; padding-bottom:4px;">
+                        ${d.name}
+                    </div>
+                    <div style="width:230px;">
+                        <div class="popup-row"><span class="popup-label">Tahun Penanaman:</span> <span class="popup-value">${d.tahun || '-'}</span></div>
+                        <div class="popup-row"><span class="popup-label">Provinsi:</span> <span class="popup-value">${d.provinsi}</span></div>
+                        <div class="popup-row"><span class="popup-label">Desa:</span> <span class="popup-value">${d.desa}</span></div>
+                        <div class="popup-row"><span class="popup-label">Jumlah Bibit:</span> <span class="popup-value" style="color:#00e5ff;">${fmtNum(d.bibit)} Bibit</span></div>
+                        <div class="popup-row"><span class="popup-label">Jenis Bibit:</span> <span class="popup-value">${d.jenis}</span></div>
+                        <div class="popup-row"><span class="popup-label">Luas Tertanam:</span> <span class="popup-value">${fmtHa(d.luasPolygon)} Ha</span></div>
+                        <div class="popup-row"><span class="popup-label">Perusahaan Terlibat:</span> <span class="popup-value">${d.perusahaan}</span></div>
+                        <div class="popup-row"><span class="popup-label">Titik Koordinat:</span> <span class="popup-value" style="font-size:10px; color:#38bdf8;">${d.lat.toFixed(4)}, ${d.lng.toFixed(4)}</span></div>
+                    </div>
+                    ${getPhotoHtml(d.foto)}
+                `);
+                marker.addTo(markersLayer);
+            });
+        }
+
+        function loadScript(url) {
+            return new Promise((resolve, reject) => {
+                const s = document.createElement("script");
+                s.src = url + "?v=" + Date.now();
+                s.onload = resolve; s.onerror = reject;
+                document.head.appendChild(s);
+            });
+        }
+
+        function clearMangrovePolygon() {
+            if(polygonLebat) mainMap.removeLayer(polygonLebat);
+            if(polygonSedang) mainMap.removeLayer(polygonSedang);
+            if(polygonJarang) mainMap.removeLayer(polygonJarang);
+            polygonLebat = polygonSedang = polygonJarang = null;
+            loadedPolygonProvince = null;
+            document.getElementById("polygonStatus").textContent = "";
+        }
+
+        async function loadMangrovePolygon(provinceCode) {
+            if(loadedPolygonProvince === provinceCode) return;
+            clearMangrovePolygon();
+
+            const status = document.getElementById("polygonStatus");
+            status.textContent = "⏳ Memuat polygon...";
+
+            const urlL = `${MANGROVE_BASE_URL}Mangrove%20Lebat/KTTJ_MANGROVELEBAT_2_${provinceCode}.js`;
+            const urlS = `${MANGROVE_BASE_URL}Mangrove%20Sedang/KTTJ_MANGROVESEDANG_3_${provinceCode}.js`;
+            const urlJ = `${MANGROVE_BASE_URL}Mangrove%20Jarang/KTTJ_MANGROVEJARANG_4_${provinceCode}.js`;
+
+            try {
+                await Promise.all([loadScript(urlL), loadScript(urlS), loadScript(urlJ)]);
+
+                const dL = window[`KTTJ_MANGROVELEBAT_2_${provinceCode}`];
+                const dS = window[`KTTJ_MANGROVESEDANG_3_${provinceCode}`];
+                const dJ = window[`KTTJ_MANGROVEJARANG_4_${provinceCode}`];
+
+                if(dL) polygonLebat = L.geoJSON(dL, { style: { color:"#6A1B9A", fillColor:"#6A1B9A", fillOpacity:.4, weight:1 } }).addTo(mainMap);
+                if(dS) polygonSedang = L.geoJSON(dS, { style: { color:"#F57C00", fillColor:"#F57C00", fillOpacity:.4, weight:1 } }).addTo(mainMap);
+                if(dJ) polygonJarang = L.geoJSON(dJ, { style: { color:"#1976D2", fillColor:"#1976D2", fillOpacity:.4, weight:1 } }).addTo(mainMap);
+
+                updatePolygonVisibility();
+
+                loadedPolygonProvince = provinceCode;
+                status.textContent = "✅ Polygon siap";
+            } catch(e) {
+                status.textContent = "⚠️ Polygon tidak tersedia";
+            }
+        }
+
+        function updatePolygonVisibility() {
+            const showL = document.getElementById("checkLebat").checked;
+            const showS = document.getElementById("checkSedang").checked;
+            const showJ = document.getElementById("checkJarang").checked;
+
+            if(polygonLebat) showL ? mainMap.addLayer(polygonLebat) : mainMap.removeLayer(polygonLebat);
+            if(polygonSedang) showS ? mainMap.addLayer(polygonSedang) : mainMap.removeLayer(polygonSedang);
+            if(polygonJarang) showJ ? mainMap.addLayer(polygonJarang) : mainMap.removeLayer(polygonJarang);
+        }
+
+        document.getElementById("checkLebat").addEventListener("change", updatePolygonVisibility);
+        document.getElementById("checkSedang").addEventListener("change", updatePolygonVisibility);
+        document.getElementById("checkJarang").addEventListener("change", updatePolygonVisibility);
+
+        // Start App
+        loadSpreadsheet();
+    </script>
 </body>
-
 </html>
