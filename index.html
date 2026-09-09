@@ -332,7 +332,7 @@
             cursor: pointer;
         }
 
-        /* MODERN FLOATING LAYER WIDGET (KANAN ATAS) */
+        /* MODERN FLOATING LAYER WIDGET (KANAN ATAS MAP) */
         .layer-control-floating {
             position: absolute;
             top: 20px;
@@ -1141,41 +1141,59 @@
             });
         }
 
+        /* UPDATE DASHBOARD: KHUSUS MENGHITUNG DATA TEREALISASI */
         function updateDashboard() {
             const data = getFilteredData();
 
-            const totalBibit = data.reduce((s,d) => s + d.bibit, 0);
-            const totalLuas = data.reduce((s,d) => s + d.luasPolygon, 0);
+            // Saring data khusus yang Terealisasi
+            const realData = data.filter(d => String(d.statusKegiatan).trim().toLowerCase() === "terealisasi");
+            
+            // Hitung lokasi yang Dalam Perencanaan
+            const countRencana = data.filter(d => String(d.statusKegiatan).trim().toLowerCase() === "dalam perencanaan").length;
 
-            const countReal = data.filter(d => d.statusKegiatan === "Terealisasi").reduce((s,d) => s + d.bibit, 0);
-            const countRencana = data.filter(d => d.statusKegiatan === "Dalam Perencanaan").length;
+            const totalBibitReal = realData.reduce((s,d) => s + d.bibit, 0);
+            const totalLuasReal = realData.reduce((s,d) => s + d.luasPolygon, 0);
 
-            const provinces = {}, companies = {};
-            data.forEach(d => {
-                if(!provinces[d.provinsi]) provinces[d.provinsi] = { bibit: 0, luas: 0 };
-                provinces[d.provinsi].bibit += d.bibit;
-                provinces[d.provinsi].luas += d.luasPolygon;
+            const provincesReal = {}, companiesReal = {};
+            realData.forEach(d => {
+                if(!provincesReal[d.provinsi]) provincesReal[d.provinsi] = { bibit: 0, luas: 0 };
+                provincesReal[d.provinsi].bibit += d.bibit;
+                provincesReal[d.provinsi].luas += d.luasPolygon;
 
-                if(!companies[d.perusahaan]) companies[d.perusahaan] = 0;
-                companies[d.perusahaan] += d.bibit;
+                // Penyaringan Mitra Valid
+                const namaMitra = String(d.perusahaan || "").trim();
+                const namaMitraLower = namaMitra.toLowerCase();
+
+                if (
+                    namaMitra && 
+                    namaMitra !== "-" && 
+                    namaMitraLower !== "tidak diketahui" && 
+                    namaMitraLower !== "perusahaan" && 
+                    namaMitraLower !== "sumber_dana" &&
+                    namaMitraLower !== "sumber dana"
+                ) {
+                    if(!companiesReal[namaMitra]) companiesReal[namaMitra] = 0;
+                    companiesReal[namaMitra] += d.bibit;
+                }
             });
 
-            document.getElementById("kpiBibit").textContent = fmtJt(totalBibit);
-            document.getElementById("kpiLuas").innerHTML = `${fmtHa(totalLuas)} <span class="unit">Ha</span>`;
-            document.getElementById("statProv").textContent = Object.keys(provinces).length;
-            document.getElementById("statComp").textContent = Object.keys(companies).length;
+            // Set KPI Cards hanya untuk Terealisasi
+            document.getElementById("kpiBibit").textContent = fmtJt(totalBibitReal);
+            document.getElementById("kpiLuas").innerHTML = `${fmtHa(totalLuasReal)} <span class="unit">Ha</span>`;
+            document.getElementById("statProv").textContent = Object.keys(provincesReal).length;
+            document.getElementById("statComp").textContent = Object.keys(companiesReal).length;
             document.getElementById("statRencana").textContent = `${countRencana} Lokasi`;
 
-            document.getElementById("subRealBibit").textContent = fmtJt(countReal);
-            document.getElementById("targetCurrent").textContent = fmtNum(totalBibit);
+            document.getElementById("subRealBibit").textContent = fmtJt(totalBibitReal);
+            document.getElementById("targetCurrent").textContent = fmtNum(totalBibitReal);
             
             // Persentase Kontribusi
-            const pct = ((totalBibit / TARGET_NASIONAL) * 100).toFixed(2);
+            const pct = ((totalBibitReal / TARGET_NASIONAL) * 100).toFixed(2);
             document.getElementById("gaugePctValue").textContent = `${pct}%`;
 
-            renderGaugeChart(totalBibit);
-            renderYearlyTrendChart(data);
-            renderTop3Table(provinces);
+            renderGaugeChart(totalBibitReal);
+            renderYearlyTrendChart(realData);
+            renderTop3Table(provincesReal);
             updateMapMarkers(data);
         }
 
@@ -1370,6 +1388,7 @@
                         <div class="popup-row"><span class="popup-label">Jenis Bibit:</span> <span class="popup-value">${d.jenis}</span></div>
                         <div class="popup-row"><span class="popup-label">Luas Tertanam:</span> <span class="popup-value">${fmtHa(d.luasPolygon)} Ha</span></div>
                         <div class="popup-row"><span class="popup-label">Perusahaan Terlibat:</span> <span class="popup-value">${d.perusahaan}</span></div>
+                        <div class="popup-row"><span class="popup-label">Status Kegiatan:</span> <span class="popup-value" style="color:${d.statusKegiatan === 'Terealisasi' ? '#10b981' : '#f59e0b'}">${d.statusKegiatan}</span></div>
                         <div class="popup-row"><span class="popup-label">Titik Koordinat:</span> <span class="popup-value" style="font-size:10px; color:#38bdf8;">${d.lat.toFixed(4)}, ${d.lng.toFixed(4)}</span></div>
                     </div>
                     ${getPhotoHtml(d.foto)}
