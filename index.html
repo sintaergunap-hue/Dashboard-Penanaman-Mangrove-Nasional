@@ -852,7 +852,7 @@
                 </div>
             </div>
 
-            <!-- Kolom 4: DINAMIS - Sumber Dana / Mitra (Daftar Mitra Tampil di Sub Info) -->
+            <!-- Kolom 4: DINAMIS - Sumber Dana / Mitra -->
             <div class="stat-card">
                 <div class="card-top-icon">
                     <i data-lucide="users" style="width:14px; color:#a855f7;"></i>
@@ -927,9 +927,9 @@
         let isSatellite = false;
         let allLayersHidden = false;
 
-        // Grouping layer polygon global
-        let globalPolygonGroup = L.layerGroup();
-        let loadedPolygons = {}; // cache status per kode provinsi
+        // Grouping polygon per provinsi
+        let polygonLebat = null, polygonSedang = null, polygonJarang = null;
+        let loadedPolygonProvince = null;
 
         let selectedProvCode = "All";
 
@@ -1008,10 +1008,30 @@
             }
         }
 
+        /* LAST UPDATE TANGGAL OTOMATIS TERBARU */
         function updateLastUpdate() {
-            const dates = plantingData.map(d => d.lastUpdate).filter(Boolean);
+            const rawDates = plantingData.map(d => d.lastUpdate).filter(Boolean);
             const el = document.getElementById("lastUpdate");
-            if(el) el.textContent = dates.length ? "Update: " + dates.sort((a,b) => new Date(b) - new Date(a))[0] : "Update: Belum tersedia";
+            
+            if(!el) return;
+
+            if(rawDates.length > 0) {
+                const validDates = rawDates
+                    .map(d => new Date(d))
+                    .filter(d => !isNaN(d.getTime()));
+
+                if(validDates.length > 0) {
+                    const latestDate = new Date(Math.max(...validDates));
+                    const formattedDate = latestDate.toLocaleDateString("id-ID", {
+                        day: "numeric",
+                        month: "long",
+                        year: "numeric"
+                    });
+                    el.textContent = "Update: " + formattedDate;
+                    return;
+                }
+            }
+            el.textContent = "Update: Belum tersedia";
         }
 
         /* LOGIC FLOATING LAYER MANAGEMENT */
@@ -1112,8 +1132,10 @@
             updateDashboard();
 
             if(code !== "All") {
+                loadMangrovePolygon(code);
                 zoomToProvince(name);
             } else {
+                clearMangrovePolygon();
                 mainMap.setView([-2.5, 118], 5);
             }
         }
@@ -1161,7 +1183,7 @@
             });
         }
 
-        /* UPDATE DASHBOARD: RATE CARD & NAMA MITRA DIBAWAH ANGKA MITRA */
+        /* UPDATE DASHBOARD: RATE CARD & TAMPILAN MITRA */
         function updateDashboard() {
             const data = getFilteredData();
 
@@ -1217,7 +1239,7 @@
                 subMitraDetail.textContent = "Mitra Terlibat";
             } else {
                 subMitraDetail.textContent = companyNames.join(", ");
-                subMitraDetail.title = companyNames.join(", "); // Tooltip saat hover
+                subMitraDetail.title = companyNames.join(", ");
             }
 
             // LOGIKA DINAMIS CARD KE-3: "Provinsi Tertanam" VS "Kab/Kota Tertanam"
@@ -1396,17 +1418,11 @@
 
             darkLayer.addTo(mainMap);
 
-            // Grouping Layer Polygon Global
-            globalPolygonGroup.addTo(mainMap);
-
             // Custom Pane Marker agar selalu di atas
             mainMap.createPane('markerPane');
             mainMap.getPane('markerPane').style.zIndex = 650;
 
             markersLayer = L.layerGroup().addTo(mainMap);
-
-            // Muat polygon awal secara global
-            updatePolygonVisibility();
         }
 
         function toggleBasemapStyle() {
@@ -1476,59 +1492,61 @@
         function loadScript(url) {
             return new Promise((resolve, reject) => {
                 const s = document.createElement("script");
-                s.src = url;
+                s.src = url + "?v=" + Date.now();
                 s.onload = resolve; s.onerror = reject;
                 document.head.appendChild(s);
             });
         }
 
-        /* MEMUAT POLYGON MANGROVE GLOBAL SELURUH PROVINSI INDONESIA */
-        async function updatePolygonVisibility() {
+        function clearMangrovePolygon() {
+            if(polygonLebat) mainMap.removeLayer(polygonLebat);
+            if(polygonSedang) mainMap.removeLayer(polygonSedang);
+            if(polygonJarang) mainMap.removeLayer(polygonJarang);
+            polygonLebat = polygonSedang = polygonJarang = null;
+            loadedPolygonProvince = null;
+            document.getElementById("polygonStatus").textContent = "";
+        }
+
+        /* MEMUAT POLYGON MANGROVE KHUSUS PROVINSI YANG DIPILIH */
+        async function loadMangrovePolygon(provinceCode) {
+            if(loadedPolygonProvince === provinceCode) return;
+            clearMangrovePolygon();
+
+            const status = document.getElementById("polygonStatus");
+            status.textContent = "⏳ Memuat polygon...";
+
+            const urlL = `${MANGROVE_BASE_URL}Mangrove%20Lebat/KTTJ_MANGROVELEBAT_2_${provinceCode}.js`;
+            const urlS = `${MANGROVE_BASE_URL}Mangrove%20Sedang/KTTJ_MANGROVESEDANG_3_${provinceCode}.js`;
+            const urlJ = `${MANGROVE_BASE_URL}Mangrove%20Jarang/KTTJ_MANGROVEJARANG_4_${provinceCode}.js`;
+
+            try {
+                await Promise.all([loadScript(urlL), loadScript(urlS), loadScript(urlJ)]);
+
+                const dL = window[`KTTJ_MANGROVELEBAT_2_${provinceCode}`];
+                const dS = window[`KTTJ_MANGROVESEDANG_3_${provinceCode}`];
+                const dJ = window[`KTTJ_MANGROVEJARANG_4_${provinceCode}`];
+
+                if(dL) polygonLebat = L.geoJSON(dL, { style: { color:"#6A1B9A", fillColor:"#6A1B9A", fillOpacity:.4, weight:1 } }).addTo(mainMap);
+                if(dS) polygonSedang = L.geoJSON(dS, { style: { color:"#F57C00", fillColor:"#F57C00", fillOpacity:.4, weight:1 } }).addTo(mainMap);
+                if(dJ) polygonJarang = L.geoJSON(dJ, { style: { color:"#1976D2", fillColor:"#1976D2", fillOpacity:.4, weight:1 } }).addTo(mainMap);
+
+                updatePolygonVisibility();
+
+                loadedPolygonProvince = provinceCode;
+                status.textContent = "✅ Polygon siap";
+            } catch(e) {
+                status.textContent = "⚠️ Polygon tidak tersedia";
+            }
+        }
+
+        function updatePolygonVisibility() {
             const showL = document.getElementById("checkLebat").checked;
             const showS = document.getElementById("checkSedang").checked;
             const showJ = document.getElementById("checkJarang").checked;
 
-            const status = document.getElementById("polygonStatus");
-
-            if(!showL && !showS && !showJ) {
-                globalPolygonGroup.clearLayers();
-                status.textContent = "";
-                return;
-            }
-
-            status.textContent = "⏳ Memuat polygon nasional...";
-
-            const codes = Object.keys(PROVINCE_FILES);
-
-            for (const code of codes) {
-                if(!loadedPolygons[code]) {
-                    const urlL = `${MANGROVE_BASE_URL}Mangrove%20Lebat/KTTJ_MANGROVELEBAT_2_${code}.js`;
-                    const urlS = `${MANGROVE_BASE_URL}Mangrove%20Sedang/KTTJ_MANGROVESEDANG_3_${code}.js`;
-                    const urlJ = `${MANGROVE_BASE_URL}Mangrove%20Jarang/KTTJ_MANGROVEJARANG_4_${code}.js`;
-
-                    try {
-                        await Promise.allSettled([loadScript(urlL), loadScript(urlS), loadScript(urlJ)]);
-                        loadedPolygons[code] = true;
-                    } catch(e) {
-                        loadedPolygons[code] = false;
-                    }
-                }
-            }
-
-            // Rendern ulang layer polygon global
-            globalPolygonGroup.clearLayers();
-
-            codes.forEach(code => {
-                const dL = window[`KTTJ_MANGROVELEBAT_2_${code}`];
-                const dS = window[`KTTJ_MANGROVESEDANG_3_${code}`];
-                const dJ = window[`KTTJ_MANGROVEJARANG_4_${code}`];
-
-                if(showL && dL) L.geoJSON(dL, { style: { color:"#6A1B9A", fillColor:"#6A1B9A", fillOpacity:.4, weight:1 } }).addTo(globalPolygonGroup);
-                if(showS && dS) L.geoJSON(dS, { style: { color:"#F57C00", fillColor:"#F57C00", fillOpacity:.4, weight:1 } }).addTo(globalPolygonGroup);
-                if(showJ && dJ) L.geoJSON(dJ, { style: { color:"#1976D2", fillColor:"#1976D2", fillOpacity:.4, weight:1 } }).addTo(globalPolygonGroup);
-            });
-
-            status.textContent = "✅ Polygon Nasional Siap";
+            if(polygonLebat) showL ? mainMap.addLayer(polygonLebat) : mainMap.removeLayer(polygonLebat);
+            if(polygonSedang) showS ? mainMap.addLayer(polygonSedang) : mainMap.removeLayer(polygonSedang);
+            if(polygonJarang) showJ ? mainMap.addLayer(polygonJarang) : mainMap.removeLayer(polygonJarang);
         }
 
         // Start App
