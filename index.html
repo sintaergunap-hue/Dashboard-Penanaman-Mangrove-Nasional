@@ -901,7 +901,7 @@
     <script>
         lucide.createIcons();
 
-        const SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTLlhT3kN4L2qe9rC9rqpySDMDEYVRD2kM-vejjaMwhdcXVaG9-1EBdDMVwvPfv_WmXT8U_FD8FvxFE/pub?output=csv";
+        const SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSY5Ix-OMMx9U4uLhV4PHkBUN7OVijzUFmWjEI09btjgAv8pIV087SachUM1Vk_SW6_7WyTYMd2-UVo/pub?gid=1462568354&single=true&output=csv";
         const TARGET_NASIONAL = 2000000000; // 2 Miliar Pohon
 
         const PROVINCE_FILES = {
@@ -985,8 +985,8 @@
                 statusKegiatan: r.Status_Kegiatan || "Terealisasi",
                 tahun: Number(r.Tahun) || null,
                 foto: r.Foto || "",
-                lat: Number(String(r.Lat || "").replace(",", ".")),
-                lng: Number(String(r.Long || "").replace(",", ".")),
+                lat: Number(String(r.Lat || "").replace(",", ".")) || 0,
+                lng: Number(String(r.Long || "").replace(",", ".")) || 0,
                 lastUpdate: r.Last_Update || ""
             }));
         }
@@ -1165,7 +1165,8 @@
         }
 
         function zoomToProvince(provName) {
-            const provPoints = plantingData.filter(d => d.provinsi === provName && Number.isFinite(d.lat) && Number.isFinite(d.lng));
+            // Filter hanya titik yang valid dan bukan 0,0
+            const provPoints = plantingData.filter(d => d.provinsi === provName && Number.isFinite(d.lat) && Number.isFinite(d.lng) && !(d.lat === 0 && d.lng === 0));
             if(provPoints.length > 0) {
                 const bounds = L.latLngBounds(provPoints.map(p => [p.lat, p.lng]));
                 mainMap.fitBounds(bounds, { padding: [50, 50], maxZoom: 10 });
@@ -1456,7 +1457,8 @@
             if(!markersLayer) return;
             markersLayer.clearLayers();
             data.forEach(d => {
-                if(!Number.isFinite(d.lat) || !Number.isFinite(d.lng)) return;
+                // ABAIKAN JIKA KOORDINAT TIDAK VALID ATAU KOORDINAT [0,0]
+                if(!Number.isFinite(d.lat) || !Number.isFinite(d.lng) || (d.lat === 0 && d.lng === 0)) return;
                 
                 const marker = L.circleMarker([d.lat, d.lng], {
                     pane: 'markerPane',
