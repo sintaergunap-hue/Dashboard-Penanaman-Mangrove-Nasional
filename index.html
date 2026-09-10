@@ -107,6 +107,28 @@
             color: #fff;
         }
 
+        /* ALERT BADGE TITIK KOORDINAT SALAH */
+        .alert-badge {
+            display: none;
+            background: rgba(239, 68, 68, 0.2);
+            border: 1px solid #ef4444;
+            color: #fca5a5;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            align-items: center;
+            gap: 6px;
+            animation: pulseAlert 2s infinite;
+        }
+
+        @keyframes pulseAlert {
+            0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
+            70% { box-shadow: 0 0 0 8px rgba(239, 68, 68, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+        }
+
         .time-badge {
             background: #0d202e;
             border: 1px solid #18384b;
@@ -523,8 +545,18 @@
             justify-content: space-between;
             color: #e2e8f0;
             min-width: 200px;
-            height: 90px;
+            height: 105px;
             flex-shrink: 0;
+        }
+
+        .stat-card.clickable {
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .stat-card.clickable:hover {
+            border-color: #00e5ff;
+            background: rgba(0, 229, 255, 0.1);
+            transform: translateY(-2px);
         }
 
         .card-top-icon {
@@ -561,25 +593,61 @@
             color: #10b981;
         }
 
+        /* DYNAMIC DRILLDOWN TABLE CARD */
         .table-card {
             background: rgba(6, 24, 38, 0.6);
             border: 1px solid rgba(0, 229, 255, 0.25);
             border-radius: 8px;
             padding: 10px 14px;
             font-size: 11px;
-            min-width: 320px;
-            height: 90px;
+            min-width: 380px;
+            height: 105px;
             flex-shrink: 0;
             display: flex;
             flex-direction: column;
-            justify-content: center;
+            justify-content: flex-start;
+        }
+
+        .table-title-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 4px;
         }
 
         .table-title {
             font-size: 11px;
             font-weight: 600;
             color: #cbd5e1;
-            margin-bottom: 6px;
+        }
+
+        .btn-table-back {
+            background: rgba(0, 229, 255, 0.15);
+            border: 1px solid rgba(0, 229, 255, 0.4);
+            color: #00e5ff;
+            font-size: 9px;
+            padding: 2px 6px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-table-back:hover {
+            background: rgba(0, 229, 255, 0.3);
+            color: #fff;
+        }
+
+        .table-scroll-wrapper {
+            overflow-y: auto;
+            max-height: 70px;
+        }
+
+        .table-scroll-wrapper::-webkit-scrollbar {
+            width: 4px;
+        }
+        .table-scroll-wrapper::-webkit-scrollbar-thumb {
+            background: rgba(0, 229, 255, 0.3);
+            border-radius: 4px;
         }
 
         table {
@@ -594,6 +662,10 @@
             border-bottom: 1px solid rgba(255, 255, 255, 0.08);
             font-weight: 500;
             font-size: 10px;
+            position: sticky;
+            top: 0;
+            background: #061826;
+            z-index: 2;
         }
 
         td {
@@ -603,8 +675,107 @@
             font-size: 10px;
         }
 
+        .clickable-row {
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+        .clickable-row:hover td {
+            color: #00e5ff !important;
+        }
+
         .num {
             text-align: right;
+        }
+
+        /* MODAL WINDOW GENERAL */
+        .modal-backdrop {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(2, 10, 18, 0.85);
+            backdrop-filter: blur(8px);
+            z-index: 20000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .modal-backdrop.show {
+            display: flex;
+        }
+        .modal-content {
+            background: #0d2538;
+            border: 1px solid rgba(0, 229, 255, 0.4);
+            border-radius: 12px;
+            width: 100%;
+            max-width: 850px;
+            max-height: 85vh;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 16px 40px rgba(0,0,0,0.8);
+            animation: fadeIn 0.2s ease-in-out;
+        }
+        .modal-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .modal-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: #00e5ff;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .modal-body {
+            padding: 16px 20px;
+            overflow-y: auto;
+        }
+        .modal-body table th {
+            background: #0d2538;
+            color: #94a3b8;
+            padding: 8px;
+            font-size: 11px;
+        }
+        .modal-body table td {
+            padding: 8px;
+            font-size: 11px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        /* MODAL MAP CONTAINER UNTUK TOP 3 LOKASI */
+        .modal-map-container {
+            width: 100%;
+            height: 380px;
+            border-radius: 8px;
+            margin-top: 10px;
+            background: #111822;
+        }
+
+        .map-legend-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 10px;
+            background: rgba(6, 24, 38, 0.6);
+            padding: 8px 12px;
+            border-radius: 6px;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 10px;
+            color: #cbd5e1;
+        }
+        .legend-color-box {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            display: inline-block;
         }
 
         /* Leaflet Popup Custom Styling */
@@ -661,6 +832,12 @@
         </div>
 
         <div class="header-controls">
+            <!-- ALERT BADGE KOORDINAT SALAH -->
+            <div class="alert-badge" id="coordAlertBadge" onclick="openAlertModal()" title="Klik untuk lihat daftar titik koordinat bermasalah">
+                <i data-lucide="alert-triangle" style="width:14px;"></i>
+                <span id="alertCountText">0 Koordinat Salah!</span>
+            </div>
+
             <button class="nav-btn"><i data-lucide="home" style="width:14px"></i> Home</button>
             <div class="time-badge" id="lastUpdate">Memuat data...</div>
             <button class="export-btn"><i data-lucide="share-2" style="width:14px"></i> Share / Export</button>
@@ -759,9 +936,25 @@
                             <label class="layer-item">
                                 <div class="layer-item-left">
                                     <span style="width:10px; height:10px; border-radius:50%; background:#00e5ff; display:inline-block; border:1px solid #fff;"></span>
-                                    <span>Titik Penanaman Realisasi</span>
+                                    <span>Titik Realisasi</span>
                                 </div>
-                                <input type="checkbox" id="checkMarkers" checked onchange="toggleMarkersVisibility()">
+                                <input type="checkbox" id="checkMarkersReal" checked onchange="toggleMarkersVisibility()">
+                            </label>
+
+                            <label class="layer-item">
+                                <div class="layer-item-left">
+                                    <span style="width:10px; height:10px; border-radius:50%; background:#f59e0b; display:inline-block; border:1px solid #fff;"></span>
+                                    <span style="color:#fcd34d;">Titik Dalam Perencanaan</span>
+                                </div>
+                                <input type="checkbox" id="checkMarkersPlan" checked onchange="toggleMarkersVisibility()">
+                            </label>
+
+                            <label class="layer-item">
+                                <div class="layer-item-left">
+                                    <span style="width:10px; height:10px; border-radius:50%; background:#ef4444; display:inline-block; border:1px solid #fff;"></span>
+                                    <span style="color:#fca5a5;">Titik Error / Luar ID</span>
+                                </div>
+                                <input type="checkbox" id="checkErrorMarkers" checked onchange="toggleMarkersVisibility()">
                             </label>
                         </div>
 
@@ -840,11 +1033,11 @@
                 </div>
             </div>
 
-            <!-- Kolom 3: DINAMIS - Provinsi Tertanam ATAU Kab/Kota Tertanam -->
-            <div class="stat-card">
+            <!-- Kolom 3: DINAMIS - Provinsi Tertanam ATAU Kab/Kota Tertanam (CLICKABLE) -->
+            <div class="stat-card clickable" onclick="openProvinsiModal()" title="Klik untuk lihat detail sebaran lokasi">
                 <div class="card-top-icon">
                     <i data-lucide="building-2" style="width:14px; color:#38bdf8;"></i>
-                    <span id="labelRegionCard">Provinsi Tertanam</span>
+                    <span id="labelRegionCard">Provinsi Tertanam 🔍</span>
                 </div>
                 <div class="stat-value-tall" style="color:#38bdf8" id="statProv">0</div>
                 <div class="stat-sub-info">
@@ -852,11 +1045,11 @@
                 </div>
             </div>
 
-            <!-- Kolom 4: DINAMIS - Sumber Dana / Mitra -->
-            <div class="stat-card">
+            <!-- Kolom 4: DINAMIS - Sumber Dana / Mitra (CLICKABLE) -->
+            <div class="stat-card clickable" onclick="openMitraModal()" title="Klik untuk lihat detail kontribusi mitra">
                 <div class="card-top-icon">
                     <i data-lucide="users" style="width:14px; color:#a855f7;"></i>
-                    <span>Sumber Dana / Mitra</span>
+                    <span>Sumber Dana / Mitra 🔍</span>
                 </div>
                 <div class="stat-value-tall" style="color:#a855f7" id="statComp">0</div>
                 <div class="stat-sub-info" id="subMitraDetail">
@@ -864,11 +1057,11 @@
                 </div>
             </div>
 
-            <!-- Kolom 5: Status Kegiatan Dalam Perencanaan -->
-            <div class="stat-card">
+            <!-- Kolom 5: Status Kegiatan Dalam Perencanaan (CLICKABLE) -->
+            <div class="stat-card clickable" onclick="openRencanaModal()" title="Klik untuk lihat detail rencana lokasi">
                 <div class="card-top-icon">
                     <i data-lucide="activity" style="width:14px; color:#f59e0b;"></i>
-                    <span>Status Kegiatan</span>
+                    <span>Status Kegiatan 🔍</span>
                 </div>
                 <div class="stat-value-tall" style="color:#f59e0b" id="statRencana">0</div>
                 <div class="stat-sub-info">
@@ -878,24 +1071,162 @@
 
         </div>
 
-        <!-- Right Table: Lokasi dengan Penanaman Terbanyak -->
+        <!-- Right Table: Dynamic Drilldown (Provinsi -> Kecamatan -> Desa) -->
         <div class="table-card">
-            <div class="table-title" id="top3TableTitle">3 Lokasi dengan Penanaman Terbanyak</div>
-            <table>
-                <thead>
-                    <tr>
-                        <th>No</th>
-                        <th id="thLocationHeader">Lokasi / Provinsi</th>
-                        <th class="num">Jumlah Bibit</th>
-                    </tr>
-                </thead>
-                <tbody id="top3Tbody">
-                    <tr><td colspan="3">Memuat data...</td></tr>
-                </tbody>
-            </table>
+            <div class="table-title-container">
+                <div class="table-title" id="top3TableTitle">3 Lokasi dengan Penanaman Terbanyak</div>
+                <button class="btn-table-back" id="btnTableBack" style="display:none;" onclick="resetTableLevel()">← Kembali</button>
+            </div>
+            <div class="table-scroll-wrapper">
+                <table>
+                    <thead>
+                        <tr id="tableHeaderRow">
+                            <th>No</th>
+                            <th id="thLocationHeader">Lokasi / Provinsi</th>
+                            <th class="num">Jumlah Bibit</th>
+                        </tr>
+                    </thead>
+                    <tbody id="top3Tbody">
+                        <tr><td colspan="3">Memuat data...</td></tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
 
     </section>
+
+    <!-- MODAL ALERT KOORDINAT SALAH / LUAR INDONESIA -->
+    <div class="modal-backdrop" id="alertModal">
+        <div class="modal-content" style="border-color: #ef4444;">
+            <div class="modal-header">
+                <div class="modal-title" style="color:#fca5a5;">
+                    <i data-lucide="alert-triangle" style="width:18px;"></i>
+                    <span>Peringatan: Peta Titik Koordinat Di Luar Indonesia</span>
+                </div>
+                <i data-lucide="x" style="width:18px; cursor:pointer; color:#94a3b8;" onclick="closeAlertModal()"></i>
+            </div>
+            <div class="modal-body">
+                <div style="font-size:11px; color:#cbd5e1; margin-bottom:12px; background:rgba(239, 68, 68, 0.1); padding:8px 12px; border-radius:6px; border:1px solid rgba(239, 68, 68, 0.3);">
+                    ⚠️ Ditemukan koordinat lokasi yang berada di luar Bounding Box Wilayah Indonesia (Lat: -11 s/d 6, Long: 95 s/d 141). Mohon periksa kembali input angka Latitude/Longitude pada spreadsheet Anda.
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>No</th>
+                            <th>Nama Lokasi</th>
+                            <th>Provinsi Input</th>
+                            <th>Kab/Kota</th>
+                            <th>Latitude</th>
+                            <th>Longitude</th>
+                            <th>Ket Error</th>
+                        </tr>
+                    </thead>
+                    <tbody id="alertModalTbody"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 1: DRILLDOWN PROVINSI / WILAYAH TERTANAM -->
+    <div class="modal-backdrop" id="provinsiModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">
+                    <i data-lucide="building-2" style="width:18px;"></i>
+                    <span id="provModalTitle">Detail Sebaran Wilayah Penanaman</span>
+                </div>
+                <i data-lucide="x" style="width:18px; cursor:pointer; color:#94a3b8;" onclick="closeProvinsiModal()"></i>
+            </div>
+            <div class="modal-body">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>No</th>
+                            <th>Wilayah</th>
+                            <th class="num">Jumlah Bibit</th>
+                            <th class="num">Luas (Ha)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="provModalTbody"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 2: DRILLDOWN MITRA / SUMBER DANA -->
+    <div class="modal-backdrop" id="mitraModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">
+                    <i data-lucide="users" style="width:18px; color:#a855f7;"></i>
+                    <span id="mitraModalTitle">Detail Kontribusi Perusahaan / Mitra</span>
+                </div>
+                <i data-lucide="x" style="width:18px; cursor:pointer; color:#94a3b8;" onclick="closeMitraModal()"></i>
+            </div>
+            <div class="modal-body">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>No</th>
+                            <th>Perusahaan / Sumber Dana</th>
+                            <th class="num">Jumlah Bibit Tertanam</th>
+                            <th class="num">Luas Tertanam (Ha)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="mitraModalTbody"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 3: DRILLDOWN DALAM PERENCANAAN -->
+    <div class="modal-backdrop" id="rencanaModal">
+        <div class="modal-content" style="max-width:850px;">
+            <div class="modal-header">
+                <div class="modal-title" style="color:#f59e0b;">
+                    <i data-lucide="activity" style="width:18px;"></i>
+                    <span id="rencanaModalTitle">Detail Lokasi Dalam Perencanaan</span>
+                </div>
+                <i data-lucide="x" style="width:18px; cursor:pointer; color:#94a3b8;" onclick="closeRencanaModal()"></i>
+            </div>
+            <div class="modal-body">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>No</th>
+                            <th>Nama Lokasi</th>
+                            <th>Provinsi</th>
+                            <th>Kab/Kota</th>
+                            <th>Kecamatan</th>
+                            <th>Desa</th>
+                            <th class="num">Luas (Ha)</th>
+                            <th>Rencana Mitra</th>
+                        </tr>
+                    </thead>
+                    <tbody id="rencanaTbody"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 4: DRILL-THROUGH MAP KHUSUS TOP 3 PROVINSI/LOKASI -->
+    <div class="modal-backdrop" id="mapDrillModal">
+        <div class="modal-content" style="max-width:950px;">
+            <div class="modal-header">
+                <div class="modal-title">
+                    <i data-lucide="map-pin" style="width:18px;"></i>
+                    <span id="mapDrillTitle">Peta Titik Penanaman</span>
+                </div>
+                <i data-lucide="x" style="width:18px; cursor:pointer; color:#94a3b8;" onclick="closeMapDrillModal()"></i>
+            </div>
+            <div class="modal-body" style="padding:14px;">
+                <div id="drillMap" class="modal-map-container"></div>
+                
+                <!-- LEGENDA WARNA MITRA -->
+                <div id="drillMapLegend" class="map-legend-container"></div>
+            </div>
+        </div>
+    </div>
 
     <!-- JAVASCRIPT LOGIC -->
     <script>
@@ -920,18 +1251,24 @@
 
         const MANGROVE_BASE_URL = "https://cdn.jsdelivr.net/gh/sintaergunap-hue/Dashboard-Penanaman-Mangrove-Nasional@main/";
 
+        const COMPANY_COLORS = [
+            "#00e5ff", "#a855f7", "#f59e0b", "#10b981", "#ec4899", 
+            "#3b82f6", "#8b5cf6", "#f43f5e", "#84cc16", "#06b6d4"
+        ];
+
         let plantingData = [];
-        let mainMap = null;
-        let markersLayer = null;
+        let mainMap = null, drillMap = null;
+        let realMarkersLayer = null, planMarkersLayer = null, errorMarkersLayer = null;
+        let drillMarkersLayer = null;
         let darkLayer = null, satelliteLayer = null;
         let isSatellite = false;
         let allLayersHidden = false;
 
-        // Grouping polygon per provinsi
         let polygonLebat = null, polygonSedang = null, polygonJarang = null;
         let loadedPolygonProvince = null;
 
         let selectedProvCode = "All";
+        let selectedKecamatan = null;
 
         let gaugeChartObj = null;
         let yearlyTrendChartObj = null;
@@ -943,6 +1280,12 @@
             n = Number(n) || 0;
             if(n >= 1000000) return (n / 1000000).toLocaleString("id-ID", {minimumFractionDigits:1, maximumFractionDigits:2}) + " Jt";
             return fmtNum(n);
+        }
+
+        /* CEK KOORDINAT SALAH / LUAR WILAYAH INDONESIA */
+        function isCoordinateInIndonesia(lat, lng) {
+            if(!Number.isFinite(lat) || !Number.isFinite(lng) || (lat === 0 && lng === 0)) return false;
+            return (lat >= -11.5 && lat <= 6.5) && (lng >= 94.5 && lng <= 141.5);
         }
 
         // CSV Parser
@@ -971,24 +1314,31 @@
         }
 
         function normalizeData(raw) {
-            return raw.map((r, index) => ({
-                objectid: Number(r.OBJECTID) || index + 1,
-                name: r.Name || `Lokasi ${index+1}`,
-                provinsi: r.Provinsi || "Tidak diketahui",
-                kabkota: r.KabKota || r.Kabupaten || r.Kota || "", 
-                kecamatan: r.Kecamatan || "", 
-                desa: r.Desa || "-",
-                bibit: Number(String(r.Jumlah_Bib || "0").replace(/[^\d.-]/g, "")) || 0,
-                jenis: r.Jenis || r.Jenis_Bibit || "-",
-                luasPolygon: Number(String(r.Luas_Polyg || r.Luas_Lahan || "0").replace(",", ".")) || 0,
-                perusahaan: r.Sumber_Dana || r.Perusahaan || "Tidak diketahui",
-                statusKegiatan: r.Status_Kegiatan || "Terealisasi",
-                tahun: Number(r.Tahun) || null,
-                foto: r.Foto || "",
-                lat: Number(String(r.Lat || "").replace(",", ".")) || 0,
-                lng: Number(String(r.Long || "").replace(",", ".")) || 0,
-                lastUpdate: r.Last_Update || ""
-            }));
+            return raw.map((r, index) => {
+                const lat = Number(String(r.Lat || "").replace(",", ".")) || 0;
+                const lng = Number(String(r.Long || "").replace(",", ".")) || 0;
+                const isValidCoord = isCoordinateInIndonesia(lat, lng);
+
+                return {
+                    objectid: Number(r.OBJECTID) || index + 1,
+                    name: r.Name || `Lokasi ${index+1}`,
+                    provinsi: r.Provinsi || "Tidak diketahui",
+                    kabkota: r.KabKota || r.Kabupaten || r.Kota || "", 
+                    kecamatan: r.Kecamatan || "", 
+                    desa: r.Desa || "-",
+                    bibit: Number(String(r.Jumlah_Bib || "0").replace(/[^\d.-]/g, "")) || 0,
+                    jenis: r.Jenis || r.Jenis_Bibit || "-",
+                    luasPolygon: Number(String(r.Luas_Polyg || r.Luas_Lahan || "0").replace(",", ".")) || 0,
+                    perusahaan: r.Sumber_Dana || r.Perusahaan || "Tidak diketahui",
+                    statusKegiatan: r.Status_Kegiatan || "Terealisasi",
+                    tahun: Number(r.Tahun) || null,
+                    foto: r.Foto || "",
+                    lat: lat,
+                    lng: lng,
+                    isValidCoord: isValidCoord,
+                    lastUpdate: r.Last_Update || ""
+                };
+            });
         }
 
         async function loadSpreadsheet() {
@@ -1012,20 +1362,14 @@
         function updateLastUpdate() {
             const rawDates = plantingData.map(d => d.lastUpdate).filter(Boolean);
             const el = document.getElementById("lastUpdate");
-            
             if(!el) return;
 
             if(rawDates.length > 0) {
-                const validDates = rawDates
-                    .map(d => new Date(d))
-                    .filter(d => !isNaN(d.getTime()));
-
+                const validDates = rawDates.map(d => new Date(d)).filter(d => !isNaN(d.getTime()));
                 if(validDates.length > 0) {
                     const latestDate = new Date(Math.max(...validDates));
                     const formattedDate = latestDate.toLocaleDateString("id-ID", {
-                        day: "numeric",
-                        month: "long",
-                        year: "numeric"
+                        day: "numeric", month: "long", year: "numeric"
                     });
                     el.textContent = "Update: " + formattedDate;
                     return;
@@ -1034,7 +1378,7 @@
             el.textContent = "Update: Belum tersedia";
         }
 
-        /* LOGIC FLOATING LAYER MANAGEMENT */
+        /* FLOATING LAYER MANAGEMENT LOGIC */
         function toggleLayerModal() {
             document.getElementById("layerModalBox").classList.toggle("show");
         }
@@ -1053,12 +1397,18 @@
         }
 
         function toggleMarkersVisibility() {
-            const show = document.getElementById("checkMarkers").checked;
-            if(show) {
-                if(!mainMap.hasLayer(markersLayer)) mainMap.addLayer(markersLayer);
-            } else {
-                if(mainMap.hasLayer(markersLayer)) mainMap.removeLayer(markersLayer);
-            }
+            const showReal = document.getElementById("checkMarkersReal").checked;
+            const showPlan = document.getElementById("checkMarkersPlan").checked;
+            const showError = document.getElementById("checkErrorMarkers").checked;
+
+            if(showReal) { if(!mainMap.hasLayer(realMarkersLayer)) mainMap.addLayer(realMarkersLayer); } 
+            else { if(mainMap.hasLayer(realMarkersLayer)) mainMap.removeLayer(realMarkersLayer); }
+
+            if(showPlan) { if(!mainMap.hasLayer(planMarkersLayer)) mainMap.addLayer(planMarkersLayer); } 
+            else { if(mainMap.hasLayer(planMarkersLayer)) mainMap.removeLayer(planMarkersLayer); }
+
+            if(showError) { if(!mainMap.hasLayer(errorMarkersLayer)) mainMap.addLayer(errorMarkersLayer); } 
+            else { if(mainMap.hasLayer(errorMarkersLayer)) mainMap.removeLayer(errorMarkersLayer); }
         }
 
         function toggleAllLayers() {
@@ -1066,7 +1416,9 @@
             const btn = document.getElementById("btnToggleAllLayers");
             const targetState = !allLayersHidden;
 
-            document.getElementById("checkMarkers").checked = targetState;
+            document.getElementById("checkMarkersReal").checked = targetState;
+            document.getElementById("checkMarkersPlan").checked = targetState;
+            document.getElementById("checkErrorMarkers").checked = targetState;
             document.getElementById("checkLebat").checked = targetState;
             document.getElementById("checkSedang").checked = targetState;
             document.getElementById("checkJarang").checked = targetState;
@@ -1077,7 +1429,7 @@
             btn.textContent = allLayersHidden ? "Show All Layers" : "Hide All Layers";
         }
 
-        /* LOGIC DROPDOWN PROVINSI DENGAN FEATURE SEARCH & ENTER KEY */
+        /* DROPDOWN PROVINSI LOGIC */
         function toggleProvDropdown() {
             const menu = document.getElementById("provDropdownMenu");
             menu.classList.toggle("show");
@@ -1120,6 +1472,7 @@
 
         function selectProvince(code, name) {
             selectedProvCode = code;
+            selectedKecamatan = null;
             document.getElementById("selectedProvText").textContent = name;
             document.getElementById("provDropdownMenu").classList.remove("show");
             document.getElementById("provSearchInput").value = "";
@@ -1161,12 +1514,14 @@
                 opt.value = y; opt.textContent = y;
                 yearSelect.appendChild(opt);
             });
-            yearSelect.onchange = updateDashboard;
+            yearSelect.onchange = () => {
+                selectedKecamatan = null;
+                updateDashboard();
+            };
         }
 
         function zoomToProvince(provName) {
-            // Filter hanya titik yang valid dan bukan 0,0
-            const provPoints = plantingData.filter(d => d.provinsi === provName && Number.isFinite(d.lat) && Number.isFinite(d.lng) && !(d.lat === 0 && d.lng === 0));
+            const provPoints = plantingData.filter(d => d.provinsi === provName && d.isValidCoord);
             if(provPoints.length > 0) {
                 const bounds = L.latLngBounds(provPoints.map(p => [p.lat, p.lng]));
                 mainMap.fitBounds(bounds, { padding: [50, 50], maxZoom: 10 });
@@ -1184,14 +1539,21 @@
             });
         }
 
-        /* UPDATE DASHBOARD: RATE CARD & TAMPILAN MITRA */
         function updateDashboard() {
             const data = getFilteredData();
 
-            // Saring data khusus yang Terealisasi
+            const errorCoords = data.filter(d => !d.isValidCoord);
+            const alertBadge = document.getElementById("coordAlertBadge");
+            const alertCountText = document.getElementById("alertCountText");
+
+            if(errorCoords.length > 0) {
+                alertCountText.textContent = `${errorCoords.length} Titik Luar ID!`;
+                alertBadge.style.display = "flex";
+            } else {
+                alertBadge.style.display = "none";
+            }
+
             const realData = data.filter(d => String(d.statusKegiatan).trim().toLowerCase() === "terealisasi");
-            
-            // Hitung lokasi yang Dalam Perencanaan
             const countRencana = data.filter(d => String(d.statusKegiatan).trim().toLowerCase() === "dalam perencanaan").length;
 
             const totalBibitReal = realData.reduce((s,d) => s + d.bibit, 0);
@@ -1200,16 +1562,13 @@
             const provincesReal = {}, companiesReal = {}, localRegionsReal = {};
 
             realData.forEach(d => {
-                // Kelompokkan per Provinsi
                 if(!provincesReal[d.provinsi]) provincesReal[d.provinsi] = 0;
                 provincesReal[d.provinsi] += d.bibit;
 
-                // Kelompokkan per Kabupaten/Kota
                 const regionName = d.kabkota || d.kecamatan || "Kab. Tidak Teridentifikasi";
                 if(!localRegionsReal[regionName]) localRegionsReal[regionName] = 0;
                 localRegionsReal[regionName] += d.bibit;
 
-                // Penyaringan Mitra Valid
                 const namaMitra = String(d.perusahaan || "").trim();
                 const namaMitraLower = namaMitra.toLowerCase();
 
@@ -1226,13 +1585,11 @@
                 }
             });
 
-            // Set KPI Cards dasar
             document.getElementById("kpiBibit").textContent = fmtJt(totalBibitReal);
             document.getElementById("kpiLuas").innerHTML = `${fmtHa(totalLuasReal)} <span class="unit">Ha</span>`;
             document.getElementById("statComp").textContent = Object.keys(companiesReal).length;
             document.getElementById("statRencana").textContent = `${countRencana} Lokasi`;
 
-            // UPDATE TEKS DETAIL MITRA DI BAWAH ANGKA CARD
             const subMitraDetail = document.getElementById("subMitraDetail");
             const companyNames = Object.keys(companiesReal);
 
@@ -1243,32 +1600,414 @@
                 subMitraDetail.title = companyNames.join(", ");
             }
 
-            // LOGIKA DINAMIS CARD KE-3: "Provinsi Tertanam" VS "Kab/Kota Tertanam"
             const labelRegionCard = document.getElementById("labelRegionCard");
             const statProv = document.getElementById("statProv");
 
             if(selectedProvCode === "All") {
-                labelRegionCard.textContent = "Provinsi Tertanam";
+                labelRegionCard.textContent = "Provinsi Tertanam 🔍";
                 statProv.textContent = Object.keys(provincesReal).length;
             } else {
-                labelRegionCard.textContent = "Kab/Kota Tertanam";
+                labelRegionCard.textContent = "Kab/Kota Tertanam 🔍";
                 statProv.textContent = Object.keys(localRegionsReal).length;
             }
 
             document.getElementById("subRealBibit").textContent = fmtJt(totalBibitReal);
             document.getElementById("targetCurrent").textContent = fmtNum(totalBibitReal);
             
-            // Persentase Kontribusi
             const pct = ((totalBibitReal / TARGET_NASIONAL) * 100).toFixed(2);
             document.getElementById("gaugePctValue").textContent = `${pct}%`;
 
             renderGaugeChart(totalBibitReal);
             renderYearlyTrendChart(realData);
-            
-            // Render Tabel Top 3
-            renderTop3Table(selectedProvCode === "All" ? provincesReal : localRegionsReal);
-            
+            renderDynamicTable(realData);
             updateMapMarkers(data);
+        }
+
+        /* MODAL ALERT KOORDINAT ERROR */
+        function openAlertModal() {
+            const data = getFilteredData();
+            const errorData = data.filter(d => !d.isValidCoord);
+            
+            const modal = document.getElementById("alertModal");
+            const tbody = document.getElementById("alertModalTbody");
+            tbody.innerHTML = "";
+
+            errorData.forEach((d, idx) => {
+                let errReason = "Luar Wilayah Indonesia";
+                if(d.lat === 0 && d.lng === 0) errReason = "Koordinat Kosong / (0,0)";
+
+                tbody.innerHTML += `
+                    <tr>
+                        <td>${idx + 1}</td>
+                        <td style="color:#fca5a5; font-weight:600;">${d.name}</td>
+                        <td>${d.provinsi}</td>
+                        <td>${d.kabkota || '-'}</td>
+                        <td style="color:#ef4444; font-weight:bold;">${d.lat}</td>
+                        <td style="color:#ef4444; font-weight:bold;">${d.lng}</td>
+                        <td><span style="background:rgba(239,68,68,0.2); color:#ef4444; padding:2px 6px; border-radius:4px; font-size:10px;">${errReason}</span></td>
+                    </tr>
+                `;
+            });
+
+            modal.classList.add("show");
+            lucide.createIcons();
+        }
+        function closeAlertModal() { document.getElementById("alertModal").classList.remove("show"); }
+
+        /* MODAL PROVINSI / KABKOTA */
+        function openProvinsiModal() {
+            const realData = getFilteredData().filter(d => String(d.statusKegiatan).trim().toLowerCase() === "terealisasi");
+            const modal = document.getElementById("provinsiModal");
+            const tbody = document.getElementById("provModalTbody");
+            const title = document.getElementById("provModalTitle");
+
+            tbody.innerHTML = "";
+
+            if(selectedProvCode === "All") {
+                title.textContent = "Detail Sebaran Penanaman per Provinsi";
+                const provData = {};
+                realData.forEach(d => {
+                    if(!provData[d.provinsi]) provData[d.provinsi] = { bibit: 0, luas: 0 };
+                    provData[d.provinsi].bibit += d.bibit;
+                    provData[d.provinsi].luas += d.luasPolygon;
+                });
+
+                const sorted = Object.entries(provData).sort((a,b) => b[1].bibit - a[1].bibit);
+                sorted.forEach(([prov, val], idx) => {
+                    tbody.innerHTML += `
+                        <tr>
+                            <td>${idx + 1}</td>
+                            <td style="color:#00e5ff; font-weight:600;">${prov}</td>
+                            <td class="num">${fmtJt(val.bibit)}</td>
+                            <td class="num">${fmtHa(val.luas)}</td>
+                        </tr>
+                    `;
+                });
+            } else {
+                const provName = PROVINCE_FILES[selectedProvCode];
+                title.textContent = `Detail Sebaran Kabupaten/Kota di ${provName}`;
+                const kabData = {};
+                realData.forEach(d => {
+                    const kab = d.kabkota || d.kecamatan || "Kab. Tidak Teridentifikasi";
+                    if(!kabData[kab]) kabData[kab] = { bibit: 0, luas: 0 };
+                    kabData[kab].bibit += d.bibit;
+                    kabData[kab].luas += d.luasPolygon;
+                });
+
+                const sorted = Object.entries(kabData).sort((a,b) => b[1].bibit - a[1].bibit);
+                sorted.forEach(([kab, val], idx) => {
+                    tbody.innerHTML += `
+                        <tr>
+                            <td>${idx + 1}</td>
+                            <td style="color:#38bdf8; font-weight:600;">${kab}</td>
+                            <td class="num">${fmtJt(val.bibit)}</td>
+                            <td class="num">${fmtHa(val.luas)}</td>
+                        </tr>
+                    `;
+                });
+            }
+
+            modal.classList.add("show");
+            lucide.createIcons();
+        }
+        function closeProvinsiModal() { document.getElementById("provinsiModal").classList.remove("show"); }
+
+        /* MODAL MITRA */
+        function openMitraModal() {
+            const realData = getFilteredData().filter(d => String(d.statusKegiatan).trim().toLowerCase() === "terealisasi");
+            const modal = document.getElementById("mitraModal");
+            const tbody = document.getElementById("mitraModalTbody");
+            const title = document.getElementById("mitraModalTitle");
+
+            const provName = selectedProvCode === "All" ? "Nasional" : PROVINCE_FILES[selectedProvCode];
+            title.textContent = `Detail Kontribusi Perusahaan / Mitra (${provName})`;
+            tbody.innerHTML = "";
+
+            const compData = {};
+            realData.forEach(d => {
+                const namaMitra = String(d.perusahaan || "").trim();
+                const namaMitraLower = namaMitra.toLowerCase();
+
+                if (
+                    namaMitra && 
+                    namaMitra !== "-" && 
+                    namaMitraLower !== "tidak diketahui" && 
+                    namaMitraLower !== "perusahaan" && 
+                    namaMitraLower !== "sumber_dana" &&
+                    namaMitraLower !== "sumber dana"
+                ) {
+                    if(!compData[namaMitra]) compData[namaMitra] = { bibit: 0, luas: 0 };
+                    compData[namaMitra].bibit += d.bibit;
+                    compData[namaMitra].luas += d.luasPolygon;
+                }
+            });
+
+            const sorted = Object.entries(compData).sort((a,b) => b[1].bibit - a[1].bibit);
+            if(sorted.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:#64748b; padding:16px;">Tidak ada data kontribusi mitra pada wilayah ini.</td></tr>`;
+            } else {
+                sorted.forEach(([comp, val], idx) => {
+                    tbody.innerHTML += `
+                        <tr>
+                            <td>${idx + 1}</td>
+                            <td style="color:#a855f7; font-weight:600;">${comp}</td>
+                            <td class="num">${fmtJt(val.bibit)}</td>
+                            <td class="num">${fmtHa(val.luas)}</td>
+                        </tr>
+                    `;
+                });
+            }
+
+            modal.classList.add("show");
+            lucide.createIcons();
+        }
+        function closeMitraModal() { document.getElementById("mitraModal").classList.remove("show"); }
+
+        /* MODAL DALAM PERENCANAAN */
+        function openRencanaModal() {
+            const data = getFilteredData();
+            const rencanaData = data.filter(d => String(d.statusKegiatan).trim().toLowerCase() === "dalam perencanaan");
+            
+            const modal = document.getElementById("rencanaModal");
+            const tbody = document.getElementById("rencanaTbody");
+            const title = document.getElementById("rencanaModalTitle");
+            
+            const provName = selectedProvCode === "All" ? "Nasional" : PROVINCE_FILES[selectedProvCode];
+            title.textContent = `Detail Lokasi Dalam Perencanaan (${provName})`;
+            tbody.innerHTML = "";
+
+            if(rencanaData.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; color:#64748b; padding:16px;">Tidak ada kegiatan dalam perencanaan pada wilayah ini.</td></tr>`;
+            } else {
+                rencanaData.forEach((d, idx) => {
+                    tbody.innerHTML += `
+                        <tr>
+                            <td>${idx + 1}</td>
+                            <td style="color:#f59e0b; font-weight:600;">${d.name}</td>
+                            <td>${d.provinsi}</td>
+                            <td>${d.kabkota || '-'}</td>
+                            <td>${d.kecamatan || '-'}</td>
+                            <td>${d.desa || '-'}</td>
+                            <td class="num">${fmtHa(d.luasPolygon)}</td>
+                            <td style="color:#f59e0b;">${d.perusahaan || 'Belum Ditentukan'}</td>
+                        </tr>
+                    `;
+                });
+            }
+
+            modal.classList.add("show");
+            lucide.createIcons();
+        }
+        function closeRencanaModal() { document.getElementById("rencanaModal").classList.remove("show"); }
+
+        /* DRILL MAP UNTUK TABEL TOP 3 PROVINSI/LOKASI */
+        function openMapDrillModal(regionName) {
+            const modal = document.getElementById("mapDrillModal");
+            const title = document.getElementById("mapDrillTitle");
+            const legendContainer = document.getElementById("drillMapLegend");
+            
+            title.textContent = `Peta Titik Penanaman & Sebaran Mitra: ${regionName}`;
+            modal.classList.add("show");
+
+            const locationPoints = plantingData.filter(d => 
+                (d.provinsi === regionName || d.kabkota === regionName || d.kecamatan === regionName) &&
+                d.isValidCoord
+            );
+
+            renderDrillMapPoints(locationPoints, legendContainer);
+        }
+
+        function renderDrillMapPoints(locationPoints, legendContainer) {
+            setTimeout(() => {
+                if(!drillMap) {
+                    drillMap = L.map("drillMap", { zoomControl: true }).setView([-2.5, 118], 5);
+                    L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}', { attribution: 'Esri' }).addTo(drillMap);
+                    L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Reference/MapServer/tile/{z}/{y}/{x}').addTo(drillMap);
+                    drillMarkersLayer = L.layerGroup().addTo(drillMap);
+                } else {
+                    drillMarkersLayer.clearLayers();
+                }
+
+                drillMap.invalidateSize();
+
+                const bibitValues = locationPoints.map(p => p.bibit).filter(b => b > 0);
+                const maxBibit = bibitValues.length ? Math.max(...bibitValues) : 1;
+
+                const uniqueCompanies = [...new Set(locationPoints.map(p => p.perusahaan || "Tidak diketahui"))];
+                const companyColorMap = {};
+                uniqueCompanies.forEach((comp, idx) => {
+                    companyColorMap[comp] = COMPANY_COLORS[idx % COMPANY_COLORS.length];
+                });
+
+                legendContainer.innerHTML = "";
+                uniqueCompanies.forEach(comp => {
+                    legendContainer.innerHTML += `
+                        <div class="legend-item">
+                            <span class="legend-color-box" style="background:${companyColorMap[comp]};"></span>
+                            <span>${comp}</span>
+                        </div>
+                    `;
+                });
+
+                locationPoints.forEach(p => {
+                    const isPlan = String(p.statusKegiatan).trim().toLowerCase() === "dalam perencanaan";
+                    const radius = isPlan ? 9 : Math.max(5, Math.min(18, (p.bibit / maxBibit) * 18));
+                    const markerColor = isPlan ? "#f59e0b" : companyColorMap[p.perusahaan || "Tidak diketahui"];
+
+                    const marker = L.circleMarker([p.lat, p.lng], {
+                        radius: radius,
+                        color: "#ffffff",
+                        weight: 1.5,
+                        fillColor: markerColor,
+                        fillOpacity: 0.9
+                    });
+
+                    marker.bindPopup(`
+                        <div style="font-weight:bold; color:${markerColor}; font-size:12px; margin-bottom:4px; border-bottom:1px solid ${markerColor};">
+                            ${p.name} (${p.statusKegiatan})
+                        </div>
+                        <div class="popup-row"><span class="popup-label">Provinsi:</span> <span class="popup-value">${p.provinsi}</span></div>
+                        <div class="popup-row"><span class="popup-label">Kab/Kota:</span> <span class="popup-value">${p.kabkota || '-'}</span></div>
+                        <div class="popup-row"><span class="popup-label">Target Bibit:</span> <span class="popup-value" style="color:${markerColor};">${fmtNum(p.bibit)} Bibit</span></div>
+                        <div class="popup-row"><span class="popup-label">Luas:</span> <span class="popup-value">${fmtHa(p.luasPolygon)} Ha</span></div>
+                        <div class="popup-row"><span class="popup-label">Rencana Mitra:</span> <span class="popup-value">${p.perusahaan}</span></div>
+                    `);
+
+                    marker.addTo(drillMarkersLayer);
+                });
+
+                if(locationPoints.length > 0) {
+                    const bounds = L.latLngBounds(locationPoints.map(p => [p.lat, p.lng]));
+                    drillMap.fitBounds(bounds, { padding: [40, 40], maxZoom: 12 });
+                } else {
+                    drillMap.setView([-2.5, 118], 5);
+                }
+            }, 300);
+
+            lucide.createIcons();
+        }
+
+        function closeMapDrillModal() { document.getElementById("mapDrillModal").classList.remove("show"); }
+
+        /* LOGIKA TABEL DRILLDOWN UTAMA */
+        function renderDynamicTable(realData) {
+            const tbody = document.getElementById("top3Tbody");
+            const headerRow = document.getElementById("tableHeaderRow");
+            const tableTitle = document.getElementById("top3TableTitle");
+            const btnBack = document.getElementById("btnTableBack");
+            tbody.innerHTML = "";
+
+            if (selectedProvCode === "All") {
+                tableTitle.textContent = "3 Lokasi Penanaman Terbanyak";
+                btnBack.style.display = "none";
+                headerRow.innerHTML = `
+                    <th>No</th>
+                    <th>Provinsi (Klik Peta 🗺️)</th>
+                    <th class="num">Jumlah Bibit</th>
+                `;
+
+                const provinces = {};
+                realData.forEach(d => {
+                    provinces[d.provinsi] = (provinces[d.provinsi] || 0) + d.bibit;
+                });
+
+                const sorted = Object.entries(provinces).sort((a,b) => b[1] - a[1]).slice(0, 3);
+                if (sorted.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="3" style="text-align:center; color:#64748b;">Tidak ada data penanaman</td></tr>`;
+                    return;
+                }
+
+                sorted.forEach(([prov, bibit], idx) => {
+                    tbody.innerHTML += `
+                        <tr class="clickable-row" onclick="openMapDrillModal('${prov.replace(/'/g, "\\'")}')" title="Klik untuk lihat peta & titik lokasi">
+                            <td>${idx + 1}</td>
+                            <td style="color:#00e5ff; font-weight:600;">${prov} 🗺️</td>
+                            <td class="num">${fmtJt(bibit)}</td>
+                        </tr>
+                    `;
+                });
+            }
+            else if (!selectedKecamatan) {
+                const provName = PROVINCE_FILES[selectedProvCode];
+                tableTitle.textContent = `Kecamatan di ${provName}`;
+                btnBack.style.display = "none";
+                headerRow.innerHTML = `
+                    <th>No</th>
+                    <th>Kecamatan</th>
+                    <th class="num">Luas (Ha)</th>
+                    <th class="num">Bibit</th>
+                `;
+
+                const kecData = {};
+                realData.forEach(d => {
+                    const kec = d.kecamatan || "Tidak Terdefinisi";
+                    if (!kecData[kec]) kecData[kec] = { bibit: 0, luas: 0 };
+                    kecData[kec].bibit += d.bibit;
+                    kecData[kec].luas += d.luasPolygon;
+                });
+
+                const sorted = Object.entries(kecData).sort((a,b) => b[1].bibit - a[1].bibit);
+                if (sorted.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:#64748b;">Tidak ada data kecamatan</td></tr>`;
+                    return;
+                }
+
+                sorted.forEach(([kec, val], idx) => {
+                    tbody.innerHTML += `
+                        <tr class="clickable-row" onclick="drillDownToDesa('${kec.replace(/'/g, "\\'")}')" title="Klik untuk lihat detail desa">
+                            <td>${idx + 1}</td>
+                            <td style="color:#00e5ff; font-weight:500;">${kec} 🔍</td>
+                            <td class="num">${fmtHa(val.luas)}</td>
+                            <td class="num">${fmtJt(val.bibit)}</td>
+                        </tr>
+                    `;
+                });
+            }
+            else {
+                tableTitle.textContent = `Desa di Kec. ${selectedKecamatan}`;
+                btnBack.style.display = "inline-block";
+                headerRow.innerHTML = `
+                    <th>No</th>
+                    <th>Desa</th>
+                    <th class="num">Luas (Ha)</th>
+                    <th class="num">Bibit</th>
+                `;
+
+                const desaData = {};
+                realData.filter(d => (d.kecamatan || "Tidak Terdefinisi") === selectedKecamatan).forEach(d => {
+                    const desa = d.desa || "Tidak Terdefinisi";
+                    if (!desaData[desa]) desaData[desa] = { bibit: 0, luas: 0 };
+                    desaData[desa].bibit += d.bibit;
+                    desaData[desa].luas += d.luasPolygon;
+                });
+
+                const sorted = Object.entries(desaData).sort((a,b) => b[1].bibit - a[1].bibit);
+                if (sorted.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:#64748b;">Tidak ada data desa</td></tr>`;
+                    return;
+                }
+
+                sorted.forEach(([desa, val], idx) => {
+                    tbody.innerHTML += `
+                        <tr>
+                            <td>${idx + 1}</td>
+                            <td style="color:#38bdf8; font-weight:500;">${desa}</td>
+                            <td class="num">${fmtHa(val.luas)}</td>
+                            <td class="num">${fmtJt(val.bibit)}</td>
+                        </tr>
+                    `;
+                });
+            }
+        }
+
+        function drillDownToDesa(kecName) {
+            selectedKecamatan = kecName;
+            updateDashboard();
+        }
+
+        function resetTableLevel() {
+            selectedKecamatan = null;
+            updateDashboard();
         }
 
         function renderGaugeChart(totalBibit) {
@@ -1307,7 +2046,6 @@
             });
         }
 
-        /* FUNCTION LINE CHART TREN PENANAMAN PER TAHUN */
         function renderYearlyTrendChart(data) {
             const ctx = document.getElementById("yearlyTrendChart").getContext("2d");
             if(yearlyTrendChartObj) yearlyTrendChartObj.destroy();
@@ -1369,40 +2107,6 @@
             });
         }
 
-        /* TABEL DINAMIS TOP 3 LOKASI */
-        function renderTop3Table(groupData) {
-            const tbody = document.getElementById("top3Tbody");
-            const thHeader = document.getElementById("thLocationHeader");
-            const tableTitle = document.getElementById("top3TableTitle");
-            tbody.innerHTML = "";
-
-            if(selectedProvCode === "All") {
-                tableTitle.textContent = "3 Lokasi dengan Penanaman Terbanyak";
-                thHeader.textContent = "Lokasi / Provinsi";
-            } else {
-                tableTitle.textContent = "3 Kab/Kota Terbanyak";
-                thHeader.textContent = "Kabupaten/Kota";
-            }
-
-            const sorted = Object.entries(groupData).sort((a,b) => b[1] - a[1]).slice(0, 3);
-            
-            if(sorted.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="3" style="text-align:center; color:#64748b;">Tidak ada data penanaman</td></tr>`;
-                return;
-            }
-
-            sorted.forEach(([name, val], idx) => {
-                tbody.innerHTML += `
-                    <tr>
-                        <td>${idx + 1}</td>
-                        <td style="color:#00e5ff; font-weight:500;">${name}</td>
-                        <td class="num">${fmtJt(val)}</td>
-                    </tr>
-                `;
-            });
-        }
-
-        /* BASEMAP INIT & TOGGLE STYLE */
         function initMainMap() {
             if(mainMap) return;
             mainMap = L.map("mainMap", { zoomControl: false }).setView([-2.5, 118], 5);
@@ -1419,11 +2123,12 @@
 
             darkLayer.addTo(mainMap);
 
-            // Custom Pane Marker agar selalu di atas
             mainMap.createPane('markerPane');
             mainMap.getPane('markerPane').style.zIndex = 650;
 
-            markersLayer = L.layerGroup().addTo(mainMap);
+            realMarkersLayer = L.layerGroup().addTo(mainMap);
+            planMarkersLayer = L.layerGroup().addTo(mainMap);
+            errorMarkersLayer = L.layerGroup().addTo(mainMap);
         }
 
         function toggleBasemapStyle() {
@@ -1454,40 +2159,74 @@
         }
 
         function updateMapMarkers(data) {
-            if(!markersLayer) return;
-            markersLayer.clearLayers();
-            data.forEach(d => {
-                // ABAIKAN JIKA KOORDINAT TIDAK VALID ATAU KOORDINAT [0,0]
-                if(!Number.isFinite(d.lat) || !Number.isFinite(d.lng) || (d.lat === 0 && d.lng === 0)) return;
-                
-                const marker = L.circleMarker([d.lat, d.lng], {
-                    pane: 'markerPane',
-                    radius: 6, 
-                    color: "#ffffff", 
-                    weight: 1.5, 
-                    fillColor: "#00e5ff", 
-                    fillOpacity: 0.9
-                });
+            if(!realMarkersLayer || !planMarkersLayer || !errorMarkersLayer) return;
+            realMarkersLayer.clearLayers();
+            planMarkersLayer.clearLayers();
+            errorMarkersLayer.clearLayers();
 
-                marker.bindPopup(`
-                    <div style="font-weight:bold; color:#00e5ff; font-size:12px; margin-bottom:6px; border-bottom:1px solid #00e5ff; padding-bottom:4px;">
-                        ${d.name}
-                    </div>
-                    <div style="width:230px;">
-                        <div class="popup-row"><span class="popup-label">Tahun Penanaman:</span> <span class="popup-value">${d.tahun || '-'}</span></div>
-                        <div class="popup-row"><span class="popup-label">Provinsi:</span> <span class="popup-value">${d.provinsi}</span></div>
-                        <div class="popup-row"><span class="popup-label">KabKota:</span> <span class="popup-value">${d.kabkota || '-'}</span></div>
-                        <div class="popup-row"><span class="popup-label">Desa:</span> <span class="popup-value">${d.desa}</span></div>
-                        <div class="popup-row"><span class="popup-label">Jumlah Bibit:</span> <span class="popup-value" style="color:#00e5ff;">${fmtNum(d.bibit)} Bibit</span></div>
-                        <div class="popup-row"><span class="popup-label">Jenis Bibit:</span> <span class="popup-value">${d.jenis}</span></div>
-                        <div class="popup-row"><span class="popup-label">Luas Tertanam:</span> <span class="popup-value">${fmtHa(d.luasPolygon)} Ha</span></div>
-                        <div class="popup-row"><span class="popup-label">Perusahaan Terlibat:</span> <span class="popup-value">${d.perusahaan}</span></div>
-                        <div class="popup-row"><span class="popup-label">Status Kegiatan:</span> <span class="popup-value" style="color:${d.statusKegiatan === 'Terealisasi' ? '#10b981' : '#f59e0b'}">${d.statusKegiatan}</span></div>
-                        <div class="popup-row"><span class="popup-label">Titik Koordinat:</span> <span class="popup-value" style="font-size:10px; color:#38bdf8;">${d.lat.toFixed(4)}, ${d.lng.toFixed(4)}</span></div>
-                    </div>
-                    ${getPhotoHtml(d.foto)}
-                `);
-                marker.addTo(markersLayer);
+            data.forEach(d => {
+                if(!Number.isFinite(d.lat) || !Number.isFinite(d.lng)) return;
+                
+                if(!d.isValidCoord) {
+                    const errorMarker = L.circleMarker([d.lat, d.lng], {
+                        pane: 'markerPane', radius: 8, color: "#ffffff", weight: 2, fillColor: "#ef4444", fillOpacity: 0.9
+                    });
+                    errorMarker.bindPopup(`
+                        <div style="font-weight:bold; color:#ef4444; font-size:12px; margin-bottom:6px; border-bottom:1px solid #ef4444; padding-bottom:4px;">
+                            ⚠️ POSISI KOORDINAT ERROR (LUAR INDONESIA)
+                        </div>
+                        <div style="width:230px;">
+                            <div class="popup-row"><span class="popup-label">Nama Lokasi:</span> <span class="popup-value">${d.name}</span></div>
+                            <div class="popup-row"><span class="popup-label">Provinsi Input:</span> <span class="popup-value">${d.provinsi}</span></div>
+                            <div class="popup-row"><span class="popup-label">Lat Input:</span> <span class="popup-value" style="color:#ef4444;">${d.lat}</span></div>
+                            <div class="popup-row"><span class="popup-label">Long Input:</span> <span class="popup-value" style="color:#ef4444;">${d.lng}</span></div>
+                        </div>
+                    `);
+                    errorMarker.addTo(errorMarkersLayer);
+                } 
+                else if(String(d.statusKegiatan).trim().toLowerCase() === "dalam perencanaan") {
+                    const planMarker = L.circleMarker([d.lat, d.lng], {
+                        pane: 'markerPane', radius: 7, color: "#ffffff", weight: 1.5, fillColor: "#f59e0b", fillOpacity: 0.9
+                    });
+                    planMarker.bindPopup(`
+                        <div style="font-weight:bold; color:#f59e0b; font-size:12px; margin-bottom:6px; border-bottom:1px solid #f59e0b; padding-bottom:4px;">
+                            ${d.name} (Dalam Perencanaan)
+                        </div>
+                        <div style="width:230px;">
+                            <div class="popup-row"><span class="popup-label">Provinsi:</span> <span class="popup-value">${d.provinsi}</span></div>
+                            <div class="popup-row"><span class="popup-label">KabKota:</span> <span class="popup-value">${d.kabkota || '-'}</span></div>
+                            <div class="popup-row"><span class="popup-label">Rencana Bibit:</span> <span class="popup-value" style="color:#f59e0b;">${fmtNum(d.bibit)} Bibit</span></div>
+                            <div class="popup-row"><span class="popup-label">Luas Area:</span> <span class="popup-value">${fmtHa(d.luasPolygon)} Ha</span></div>
+                            <div class="popup-row"><span class="popup-label">Rencana Mitra:</span> <span class="popup-value">${d.perusahaan}</span></div>
+                        </div>
+                    `);
+                    planMarker.addTo(planMarkersLayer);
+                }
+                else {
+                    const marker = L.circleMarker([d.lat, d.lng], {
+                        pane: 'markerPane', radius: 6, color: "#ffffff", weight: 1.5, fillColor: "#00e5ff", fillOpacity: 0.9
+                    });
+
+                    marker.bindPopup(`
+                        <div style="font-weight:bold; color:#00e5ff; font-size:12px; margin-bottom:6px; border-bottom:1px solid #00e5ff; padding-bottom:4px;">
+                            ${d.name}
+                        </div>
+                        <div style="width:230px;">
+                            <div class="popup-row"><span class="popup-label">Tahun Penanaman:</span> <span class="popup-value">${d.tahun || '-'}</span></div>
+                            <div class="popup-row"><span class="popup-label">Provinsi:</span> <span class="popup-value">${d.provinsi}</span></div>
+                            <div class="popup-row"><span class="popup-label">KabKota:</span> <span class="popup-value">${d.kabkota || '-'}</span></div>
+                            <div class="popup-row"><span class="popup-label">Kecamatan:</span> <span class="popup-value">${d.kecamatan || '-'}</span></div>
+                            <div class="popup-row"><span class="popup-label">Desa:</span> <span class="popup-value">${d.desa}</span></div>
+                            <div class="popup-row"><span class="popup-label">Jumlah Bibit:</span> <span class="popup-value" style="color:#00e5ff;">${fmtNum(d.bibit)} Bibit</span></div>
+                            <div class="popup-row"><span class="popup-label">Jenis Bibit:</span> <span class="popup-value">${d.jenis}</span></div>
+                            <div class="popup-row"><span class="popup-label">Luas Tertanam:</span> <span class="popup-value">${fmtHa(d.luasPolygon)} Ha</span></div>
+                            <div class="popup-row"><span class="popup-label">Perusahaan Terlibat:</span> <span class="popup-value">${d.perusahaan}</span></div>
+                            <div class="popup-row"><span class="popup-label">Status Kegiatan:</span> <span class="popup-value" style="color:#10b981;">${d.statusKegiatan}</span></div>
+                        </div>
+                        ${getPhotoHtml(d.foto)}
+                    `);
+                    marker.addTo(realMarkersLayer);
+                }
             });
         }
 
@@ -1509,7 +2248,6 @@
             document.getElementById("polygonStatus").textContent = "";
         }
 
-        /* MEMUAT POLYGON MANGROVE KHUSUS PROVINSI YANG DIPILIH */
         async function loadMangrovePolygon(provinceCode) {
             if(loadedPolygonProvince === provinceCode) return;
             clearMangrovePolygon();
@@ -1551,7 +2289,7 @@
             if(polygonJarang) showJ ? mainMap.addLayer(polygonJarang) : mainMap.removeLayer(polygonJarang);
         }
 
-        // Start App
+        // Start Application
         loadSpreadsheet();
     </script>
 </body>
