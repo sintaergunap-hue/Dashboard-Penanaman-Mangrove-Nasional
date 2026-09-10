@@ -545,7 +545,7 @@
             justify-content: space-between;
             color: #e2e8f0;
             min-width: 200px;
-            height: 105px;
+            height: 115px;
             flex-shrink: 0;
         }
 
@@ -593,7 +593,7 @@
             color: #10b981;
         }
 
-        /* DYNAMIC DRILLDOWN TABLE CARD */
+        /* DYNAMIC DRILLDOWN TABLE / CHART CARD */
         .table-card {
             background: rgba(6, 24, 38, 0.6);
             border: 1px solid rgba(0, 229, 255, 0.25);
@@ -601,7 +601,7 @@
             padding: 10px 14px;
             font-size: 11px;
             min-width: 380px;
-            height: 105px;
+            height: 115px;
             flex-shrink: 0;
             display: flex;
             flex-direction: column;
@@ -639,7 +639,10 @@
 
         .table-scroll-wrapper {
             overflow-y: auto;
-            max-height: 70px;
+            max-height: 80px;
+            width: 100%;
+            height: 100%;
+            position: relative;
         }
 
         .table-scroll-wrapper::-webkit-scrollbar {
@@ -1071,24 +1074,27 @@
 
         </div>
 
-        <!-- Right Table: Dynamic Drilldown (Provinsi -> Kecamatan -> Desa) -->
+        <!-- Right Panel: GRAFIK BATANG TOP 3 LOKASI (ATAU TABEL UNTUK KECAMATAN/DESA) -->
         <div class="table-card">
             <div class="table-title-container">
-                <div class="table-title" id="top3TableTitle">3 Lokasi dengan Penanaman Terbanyak</div>
+                <div class="table-title" id="top3TableTitle">3 Lokasi Penanaman Terbanyak (Klik Batang 🗺️)</div>
                 <button class="btn-table-back" id="btnTableBack" style="display:none;" onclick="resetTableLevel()">← Kembali</button>
             </div>
             <div class="table-scroll-wrapper">
-                <table>
+                <!-- Canvas Grafik Batang Top 3 -->
+                <canvas id="top3BarChart" style="display:block; width:100%; height:100%;"></canvas>
+                
+                <!-- Table Fallback untuk Drilldown Kecamatan & Desa -->
+                <table id="drillTable" style="display:none;">
                     <thead>
                         <tr id="tableHeaderRow">
                             <th>No</th>
-                            <th id="thLocationHeader">Lokasi / Provinsi</th>
-                            <th class="num">Jumlah Bibit</th>
+                            <th id="thLocationHeader">Lokasi</th>
+                            <th class="num">Luas (Ha)</th>
+                            <th class="num">Bibit</th>
                         </tr>
                     </thead>
-                    <tbody id="top3Tbody">
-                        <tr><td colspan="3">Memuat data...</td></tr>
-                    </tbody>
+                    <tbody id="top3Tbody"></tbody>
                 </table>
             </div>
         </div>
@@ -1272,6 +1278,7 @@
 
         let gaugeChartObj = null;
         let yearlyTrendChartObj = null;
+        let top3BarChartObj = null;
 
         // Formatter Functions
         function fmtNum(n) { return Math.round(Number(n) || 0).toLocaleString("id-ID"); }
@@ -1800,7 +1807,7 @@
         }
         function closeRencanaModal() { document.getElementById("rencanaModal").classList.remove("show"); }
 
-        /* DRILL MAP UNTUK TABEL TOP 3 PROVINSI/LOKASI */
+        /* DRILL MAP UNTUK TABEL/GRAFIK TOP 3 PROVINSI/LOKASI */
         function openMapDrillModal(regionName) {
             const modal = document.getElementById("mapDrillModal");
             const title = document.getElementById("mapDrillTitle");
@@ -1889,22 +1896,23 @@
 
         function closeMapDrillModal() { document.getElementById("mapDrillModal").classList.remove("show"); }
 
-        /* LOGIKA TABEL DRILLDOWN UTAMA */
+        /* LOGIKA DRILLDOWN PANEL & GRAFIK BATANG TOP 3 */
         function renderDynamicTable(realData) {
             const tbody = document.getElementById("top3Tbody");
             const headerRow = document.getElementById("tableHeaderRow");
             const tableTitle = document.getElementById("top3TableTitle");
             const btnBack = document.getElementById("btnTableBack");
+            
+            const barChartCanvas = document.getElementById("top3BarChart");
+            const drillTable = document.getElementById("drillTable");
             tbody.innerHTML = "";
 
             if (selectedProvCode === "All") {
-                tableTitle.textContent = "3 Lokasi Penanaman Terbanyak";
+                tableTitle.textContent = "3 Lokasi Penanaman Terbanyak (Klik Batang 🗺️)";
                 btnBack.style.display = "none";
-                headerRow.innerHTML = `
-                    <th>No</th>
-                    <th>Provinsi (Klik Peta 🗺️)</th>
-                    <th class="num">Jumlah Bibit</th>
-                `;
+                
+                barChartCanvas.style.display = "block";
+                drillTable.style.display = "none";
 
                 const provinces = {};
                 realData.forEach(d => {
@@ -1912,25 +1920,18 @@
                 });
 
                 const sorted = Object.entries(provinces).sort((a,b) => b[1] - a[1]).slice(0, 3);
-                if (sorted.length === 0) {
-                    tbody.innerHTML = `<tr><td colspan="3" style="text-align:center; color:#64748b;">Tidak ada data penanaman</td></tr>`;
-                    return;
-                }
-
-                sorted.forEach(([prov, bibit], idx) => {
-                    tbody.innerHTML += `
-                        <tr class="clickable-row" onclick="openMapDrillModal('${prov.replace(/'/g, "\\'")}')" title="Klik untuk lihat peta & titik lokasi">
-                            <td>${idx + 1}</td>
-                            <td style="color:#00e5ff; font-weight:600;">${prov} 🗺️</td>
-                            <td class="num">${fmtJt(bibit)}</td>
-                        </tr>
-                    `;
-                });
+                
+                // Render Grafik Batang Horizontal Top 3
+                renderTop3BarChart(sorted);
             }
             else if (!selectedKecamatan) {
                 const provName = PROVINCE_FILES[selectedProvCode];
                 tableTitle.textContent = `Kecamatan di ${provName}`;
                 btnBack.style.display = "none";
+
+                barChartCanvas.style.display = "none";
+                drillTable.style.display = "table";
+
                 headerRow.innerHTML = `
                     <th>No</th>
                     <th>Kecamatan</th>
@@ -1966,6 +1967,10 @@
             else {
                 tableTitle.textContent = `Desa di Kec. ${selectedKecamatan}`;
                 btnBack.style.display = "inline-block";
+
+                barChartCanvas.style.display = "none";
+                drillTable.style.display = "table";
+
                 headerRow.innerHTML = `
                     <th>No</th>
                     <th>Desa</th>
@@ -1998,6 +2003,93 @@
                     `;
                 });
             }
+        }
+
+        /* RENDER GRAFIK BATANG HORIZONTAL TOP 3 (FIX NAMA HILANG & TERPOTONG) */
+        function renderTop3BarChart(sortedData) {
+            const ctx = document.getElementById("top3BarChart").getContext("2d");
+            if(top3BarChartObj) top3BarChartObj.destroy();
+
+            // Memastikan nama provinsi tidak kosong/spasi
+            const labels = sortedData.map(item => {
+                const name = String(item[0] || "").trim();
+                return name === "" ? "Tidak Terdefinisi" : name;
+            });
+            const values = sortedData.map(item => item[1]);
+
+            top3BarChartObj = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Jumlah Bibit',
+                        data: values,
+                        backgroundColor: [
+                            'rgba(0, 229, 255, 0.85)',
+                            'rgba(56, 189, 248, 0.85)',
+                            'rgba(168, 85, 247, 0.85)'
+                        ],
+                        borderColor: [
+                            '#00e5ff',
+                            '#38bdf8',
+                            '#a855f7'
+                        ],
+                        borderWidth: 1,
+                        borderRadius: 4,
+                        barPercentage: 0.6,
+                        categoryPercentage: 0.8
+                    }]
+                },
+                options: {
+                    indexAxis: 'y', // Batang Horizontal
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    layout: {
+                        padding: {
+                            left: 0,
+                            right: 15,
+                            top: 0,
+                            bottom: 0
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return ' Total Bibit: ' + fmtNum(context.raw) + ' Bibit (' + fmtJt(context.raw) + ')';
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            ticks: {
+                                color: '#64748b',
+                                font: { size: 9 },
+                                callback: function(val) { return fmtJt(val); }
+                            },
+                            grid: { color: 'rgba(255, 255, 255, 0.05)' }
+                        },
+                        y: {
+                            ticks: {
+                                color: '#e2e8f0',
+                                font: { size: 9, weight: 'bold' },
+                                autoSkip: false, // PAKSA SEMUA LABEL TAMPIL
+                                padding: 4
+                            },
+                            grid: { display: false }
+                        }
+                    },
+                    onClick: (evt, activeElements) => {
+                        if (activeElements.length > 0) {
+                            const index = activeElements[0].index;
+                            const selectedRegion = labels[index];
+                            openMapDrillModal(selectedRegion);
+                        }
+                    }
+                }
+            });
         }
 
         function drillDownToDesa(kecName) {
